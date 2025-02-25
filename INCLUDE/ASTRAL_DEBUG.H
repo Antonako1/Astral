@@ -1,0 +1,22 @@
+/*+++
+ASTRAL_DEBUG.H
+Author: Antonako1
+Description: Astral header file
+Licensed under the MIT License
+---*/
+
+#pragma once
+#ifndef ASTRAL_DEBUG_H
+#define ASTRAL_DEBUG_H
+
+#include <ASTRAL_STDINT.H>
+#include <ASTRAL_API.H>
+
+/// @brief DEBUG: Print tree containing of element and its children
+/// @param ROOT Pointer to the root element
+/// @param MAX_LEVEL Maximum level depth to traverse
+/// @return BOOLEAN, TRUE if successful, FALSE otherwise
+ASTRAL_EXPORT AS_BOOLEAN ASTRAL_D_TREE(AS_U0* ROOT, AS_U64 MAX_LEVEL);
+
+
+#endif // ASTRAL_DEBUG_H

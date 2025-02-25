@@ -1,0 +1,22 @@
+# Windows specific files
+
+*.exe
+*.dll
+
+# Linux specific files
+*.so
+
+# OSX specific files
+*.dylib
+
+# Cross-platform files
+*.o
+*.bin
+*.obj
+
+# Directories
+bin/
+
+out/
+build/
+lib/

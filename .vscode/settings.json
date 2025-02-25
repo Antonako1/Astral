@@ -1,0 +1,12 @@
+{
+    "files.associations": {
+        "TEST.C": "cpp",
+        "ASTRAL_UI_1.C": "cpp",
+        "WINDOWS_MAIN.C": "cpp",
+        "ASTRAL_LINUX_MAIN.C": "cpp",
+        "ASTRAL_WINDOWS_MAIN.C": "cpp",
+        "ASTRAL_WIN.C": "cpp",
+        "ASTRAL_LINUX.C": "cpp",
+        "ASTRAL_SHARED.C": "cpp"
+    }
+}
