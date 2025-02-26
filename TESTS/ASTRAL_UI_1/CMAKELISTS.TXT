@@ -18,11 +18,12 @@ add_executable(TEST ${TEST_SOURCES})
 target_link_libraries(TEST PRIVATE Astral)
 
 if(WIN32)
-# Copy the Astral DLL to the output directory
-    add_custom_command(TARGET TEST POST_BUILD
+    add_custom_target(copy_astral ALL
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
         $<TARGET_FILE:Astral>
-        $<TARGET_FILE_DIR:TEST>)
+        $<TARGET_FILE_DIR:TEST>
+        DEPENDS Astral TEST
+    )
 endif()
 
 
