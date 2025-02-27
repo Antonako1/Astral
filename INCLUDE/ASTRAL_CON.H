@@ -18,24 +18,22 @@ Licensed under the MIT License
 #include <ASTRAL_STRING.H>
 
 #if ASTRAL_PLATFORM_WINDOWS
-    #include <windows.h> // For HANDLE
+    #include <Windows.h> // For HANDLE
 #endif
 
-/*+++
-Console modes
----*/
-#define ASTRAL_CON_MODE_IGNORE_CTRL_C       0x00000001  // Ignore CTRL+C
-// #define ASTRAL_CON_MODE_LINE_WRAP           0x00000002  // Line wrap text
-// #define ASTRAL_CON_MODE_CURSOR_VISIBLE      0x00000004  // Cursor visible
-// #define ASTRAL_CON_MODE_CURSOR_BLINK        0x00000008  // Cursor blink
-#define ASTRAL_CON_MODE_MOUSE_INPUT         0x00000010  // Mouse input
+/// @brief Console size structure
+typedef struct _ASTRAL_CON_SIZE {
+    AS_U64 WIDTH;               // Width
+    AS_U64 HEIGHT;              // Height
+} ASTRAL_CON_SIZE, *PASTRAL_CON_SIZE;
 
+/// @brief Console structure
 typedef struct _ASTRAL_CONSOLE {
-    AS_U64 WIDTH;               // Width of the console
-    AS_U64 HEIGHT;              // Height of the console
+    ASTRAL_CON_SIZE SZ;         // Console size
+
     AS_U8 *BUFFER;              // Buffer for the console
     AS_U64 BUFFER_SIZE;         // Size of the buffer
-    ASTRAL_M_ARENA *ARENA;      // Memory arena for the console
+    
 #if ASTRAL_PLATFORM_WINDOWS
     HANDLE HANDLEIN;            // Handle to the console input
     HANDLE HANDLEOUT;           // Handle to the console output
@@ -53,6 +51,21 @@ typedef struct _ASTRAL_CONSOLE {
 
 } ASTRAL_CONSOLE, *PASTRAL_CONSOLE;
 
+
+/*+++
+Console modes. Apply with ASTRAL_CON_APPLY_MODES.
+Use bitwise OR ('|') to combine modes.
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Example:
+    ASTRAL_CON_MODE_IGNORE_CTRL_C | ASTRAL_CON_MODE_MOUSE_INPUT
+        --> Ignore CTRL+C and enable mouse input for the console
+---*/
+#define ASTRAL_CON_MODE_IGNORE_CTRL_C       0x00000001  // Ignore CTRL+C
+#define ASTRAL_CON_MODE_MOUSE_INPUT         0x00000002  // Mouse input, allows mouse events
+
+
+/// @brief Mouse event structure
 typedef struct _ASTRAL_CON_MOUSE_EVENT {
     AS_U64 BUTTON_STATE;        // Button state
     AS_U64 BUTTONS;             // Buttons
@@ -60,21 +73,25 @@ typedef struct _ASTRAL_CON_MOUSE_EVENT {
     AS_U64 Y;                   // Y position
 } ASTRAL_CON_MOUSE_EVENT, *PASTRAL_CON_MOUSE_EVENT;
  
+/// @brief Key event structure
 typedef struct _ASTRAL_CON_KEY_EVENT {
     AS_U64 KEY_STATE;           // Key state
     AS_U64 KEY_CODE;            // Key code
     AS_U64 CHAR;                // Character
 } ASTRAL_CON_KEY_EVENT, *PASTRAL_CON_KEY_EVENT;
 
+/// @brief Resize event structure
 typedef struct _ASTRAL_CON_RESIZE_EVENT {
     AS_U64 WIDTH;               // Width
     AS_U64 HEIGHT;              // Height
 } ASTRAL_CON_RESIZE_EVENT, *PASTRAL_CON_RESIZE_EVENT;
 
+/// @brief Menu event structure
 typedef struct _ASTRAL_CON_MENU_EVENT {
     AS_U64 MENU_ID;             // Menu ID
 } ASTRAL_CON_MENU_EVENT, *PASTRAL_CON_MENU_EVENT;
 
+/// @brief Focus event structure. Contains the focus state
 typedef struct _ASTRAL_CON_FOCUS_EVENT {
     AS_U64 FOCUS_STATE;         // Focus state
 } ASTRAL_CON_FOCUS_EVENT, *PASTRAL_CON_FOCUS_EVENT;
@@ -89,16 +106,17 @@ Console event types
 #define ASTRAL_CON_EVENT_FOCUS       0x00000010 // Focus event
 #define ASTRAL_CON_EVENT_NO_EVENT    0x00000020 // No event
 
+/// @brief Console event structure
 typedef struct _ASTRAL_CON_EVENT {
     AS_U64 EVENTS_READ;         // Events read
     AS_U32 EVENT_TYPE;          // Event type
     AS_U64 EVENT_SIZE;          // Size of the event
     AS_U8* EVENT_DATA;          // Event data
-    ASTRAL_CON_MOUSE_EVENT  _MOUSE_EVENT;   // '_' to avoid name conflicts
-    ASTRAL_CON_KEY_EVENT    _KEY_EVENT;     // '_' to avoid name conflicts
-    ASTRAL_CON_RESIZE_EVENT _RESIZE_EVENT;  // '_' to avoid name conflicts
-    ASTRAL_CON_MENU_EVENT   _MENU_EVENT;    // '_' to avoid name conflicts
-    ASTRAL_CON_FOCUS_EVENT  _FOCUS_EVENT;   // '_' to avoid name conflicts
+    ASTRAL_CON_MOUSE_EVENT  _MOUSE_EVENT;
+    ASTRAL_CON_KEY_EVENT    _KEY_EVENT;
+    ASTRAL_CON_RESIZE_EVENT _RESIZE_EVENT;
+    ASTRAL_CON_MENU_EVENT   _MENU_EVENT;
+    ASTRAL_CON_FOCUS_EVENT  _FOCUS_EVENT;
 } ASTRAL_CON_EVENT, *PASTRAL_CON_EVENT;
 
 #pragma ONLY_ON_WINDOWS_REMINDER("ASTRAL_CON_GET_EVENT")
@@ -107,6 +125,7 @@ typedef struct _ASTRAL_CON_EVENT {
 /// @param EVENT Event to store the event in
 ASTRAL_EXPORT AS_U0 ASTRAL_CON_GET_EVENT(ASTRAL_CONSOLE* CONSOLE, ASTRAL_CON_EVENT* EVENT);
 
+
 /// @brief Checks if the console is running
 /// @param CONSOLE Console to check
 /// @return BOOLEAN, is running
@@ -114,9 +133,8 @@ ASTRAL_EXPORT AS_BOOLEAN ASTRAL_CON_IS_RUNNING(ASTRAL_CONSOLE* CONSOLE);
 
 #pragma ONLY_ON_WINDOWS_REMINDER("ASTRAL_CON_CREATE")
 /// @brief Creates a new console
-/// @param ARENA Memory arena
 /// @return ASTRAL_CONSOLE
-ASTRAL_EXPORT ASTRAL_CONSOLE ASTRAL_CON_CREATE(ASTRAL_M_ARENA* ARENA);
+ASTRAL_EXPORT ASTRAL_CONSOLE ASTRAL_CON_CREATE();
 
 #pragma ONLY_ON_WINDOWS_REMINDER("ASTRAL_CON_CLEAR")
 /// @brief Clears the console screen
@@ -131,6 +149,7 @@ ASTRAL_EXPORT AS_U16 ASTRAL_CON_CLEAR(ASTRAL_CONSOLE* CONSOLE);
 /// @return BOOLEAN, success
 ASTRAL_EXPORT AS_BOOLEAN ASTRAL_CON_ADD_TO_BUFFER(ASTRAL_CONSOLE* CONSOLE, AS_STRING STRING);
 
+// TODO: x2, implement
 #pragma ONLY_ON_WINDOWS_REMINDER("ASTRAL_CON_WRITE_BUFFER")
 ASTRAL_EXPORT AS_BOOLEAN ASTRAL_CON_WRITE_BUFFER(ASTRAL_CONSOLE* CONSOLE);
 
@@ -144,31 +163,88 @@ ASTRAL_EXPORT AS_BOOLEAN ASTRAL_CON_WRITE_STRING(ASTRAL_CONSOLE* CONSOLE, AS_U8*
 /// @return BOOLEAN, success
 ASTRAL_EXPORT AS_BOOLEAN ASTRAL_CON_APPLY_MODES(ASTRAL_CONSOLE* CONSOLE, AS_U64 MODES);
 
-#pragma ONLY_ON_WINDOWS_REMINDER("ASTRAL_CON_END_CONSOLE")
+#pragma ONLY_ON_WINDOWS_REMINDER("ASTRAL_CON_DELETE")
 /// @brief Releases the console, restores original console mode
 /// @param CONSOLE Console to release
 /// @return BOOLEAN, success
-ASTRAL_EXPORT AS_BOOLEAN ASTRAL_CON_END_CONSOLE(ASTRAL_CONSOLE* CONSOLE);
+ASTRAL_EXPORT AS_BOOLEAN ASTRAL_CON_DELETE(ASTRAL_CONSOLE* CONSOLE);
 
-#define ASTRAL_CON_STR_POS_CENTER   0x00000001
-#define ASTRAL_CON_STR_POS_LEFT     0x00000002
-#define ASTRAL_CON_STR_POS_RIGHT    0x00000004
+/// @brief Console coordinate structure
+typedef struct _ASTRAL_CON_COORD {
+    AS_U64 X;                   // X position
+    AS_U64 Y;                   // Y position
+} ASTRAL_CON_COORD, *PASTRAL_CON_COORD;
 
+#define ASTRAL_CON_STR_POS_CENTER   0x0001
+#define ASTRAL_CON_STR_POS_LEFT     0x0002
+#define ASTRAL_CON_STR_POS_RIGHT    0x0003
+
+
+// Use RGBA macro to create a colour
+#define RGBA(r, g, b, a) ((AS_U32)(((AS_U8)(r)|((AS_U16)((AS_U8)(g))<<8))|(((AS_U32)(AS_U8)(b))<<16)|(((AS_U32)(AS_U8)(a))<<24)))
+
+/// @brief Console colour structure
+typedef struct _ASTRAL_CON_COLOUR {
+    AS_U8 R_F;                  // Red foreground
+    AS_U8 G_F;                  // Green foreground
+    AS_U8 B_F;                  // Blue foreground
+    AS_U8 A_F;                  // Foreground alpha
+
+    AS_U8 R_B;                  // Red background
+    AS_U8 G_B;                  // Green background
+    AS_U8 B_B;                  // Blue background
+    AS_U8 A_B;                  // Background alpha
+} ASTRAL_CON_COLOUR, *PASTRAL_CON_COLOUR;
+
+/// @brief Sets the console colour structure with the given RGB values for the foreground
+/// @param COLOUR Pointer to the colour structure
+/// @param R Red value
+/// @param G Green value
+/// @param B Blue value
+/// @param A Alpha value
+/// @return U0
+ASTRAL_EXPORT AS_U0 SET_CON_COLOUR_F(ASTRAL_CON_COLOUR* COLOUR, AS_U8 R, AS_U8 G, AS_U8 B, AS_U8 A);
+
+/// @brief Sets the console colour structure with the given RGB value for the foreground
+/// @param COLOUR Pointer to the colour structure
+/// @param RGBA RGBA value, use the RGBA macro to create a colour
+/// @return U0
+ASTRAL_EXPORT AS_U0 SET_CON_COLOUR_F(ASTRAL_CON_COLOUR* COLOUR, AS_U32 RGBA);
+
+/// @brief Sets the console colour structure with the given RGB values for the background
+/// @param COLOUR Pointer to the colour structure
+/// @param R Red value
+/// @param G Green value
+/// @param B Blue value
+/// @param A Alpha value
+/// @return U0
+ASTRAL_EXPORT AS_U0 SET_CON_COLOUR_B(ASTRAL_CON_COLOUR* COLOUR, AS_U8 R, AS_U8 G, AS_U8 B, AS_U8 A);
+
+/// @brief Sets the console colour structure with the given RGB value for the background
+/// @param COLOUR Pointer to the colour structure
+/// @param RGBA RGBA value, use the RGBA macro to create a colour
+/// @return U0
+ASTRAL_EXPORT AS_U0 SET_CON_COLOUR_B(ASTRAL_CON_COLOUR* COLOUR, AS_U32 RGBA);
+
+/// @brief Basic string object
 typedef struct _ASTRAL_CON_STR_OBJ {
-    AS_STRING STRING;           // String
-    AS_U64 F_COLOUR;            // Foreground colour
-    AS_U64 B_COLOUR;            // Background colour
-    AS_U64 POSITION;            // Position
+    AS_STRING STRING;          // String data
+    ASTRAL_CON_COLOUR COLOUR;   // Colour
 } ASTRAL_CON_STR_OBJ, *PASTRAL_CON_STR_OBJ;
 
+#define ASTRAL_CON_BUTTON_TYPE_TEXT  0x00000001
+#define ASTRAL_CON_BUTTON_TYPE_RADIO 0x00000002
+#define ASTRAL_CON_BUTTON_TYPE_CHECK 0x00000003
+
+/// @brief Console button structure
 typedef struct _ASTRAL_CON_BUTTON {
     AS_U64 BUTTON_STATE;        // Button state
     AS_U64 BUTTONS;             // Buttons
-    AS_U64 X;                   // X position
-    AS_U64 Y;                   // Y position
-    AS_U64 WIDTH;               // Width
-    AS_U64 HEIGHT;              // Height
+    AS_U64 TYPE;                // Type
+    ASTRAL_CON_COORD POS;       // Position
+    ASTRAL_CON_SIZE SZ;         // Size
     AS_U64 ID;                  // ID
+    ASTRAL_CON_COLOUR COLOUR;   // Colour
     ASTRAL_CON_STR_OBJ STR_OBJ; // String object    
 } ASTRAL_CON_BUTTON, *PASTRAL_CON_BUTTON;
 
@@ -323,10 +399,10 @@ Codes follow the ASCII standard where possible.
 #define ASTRAL_CON_KEY_MENU         0x0000009D
 #define ASTRAL_CON_KEY_WIN          0x0000009E
 
+#pragma ONLY_ON_WINDOWS_REMINDER("ASTRAL_CON_GET_SPEC_KEY_STATE") 
 /// @brief Gets the state of a specific key
 /// @param KEY_CODE Key code
-/// @return U32, key state, see key states above
-#pragma ONLY_ON_WINDOWS_REMINDER("ASTRAL_CON_GET_SPEC_KEY_STATE") 
+/// @return AS_U16, key state, see key states above
 ASTRAL_EXPORT AS_U16 ASTRAL_CON_GET_SPEC_KEY_STATE(AS_U64 KEY_CODE);
 
 
