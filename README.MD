@@ -1,7 +1,7 @@
-# Astral - Console UI framework for C/C++
+# Astral - Console UI framework made with C99
 
 ## Features
- - Does NOT rely on libc (All calls are platform specific)
- - Easy to use and easy to implement to different platforms
- - Currently supports
-    - Windows
+ - Does not rely on LIBC
+ - Mouse movement
+ - Easy to use
+ - Currently supports Windows
