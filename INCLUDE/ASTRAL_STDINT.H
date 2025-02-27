@@ -41,12 +41,21 @@ typedef signed long long    AS_I64;
 typedef float               AS_F32;
 typedef double              AS_F64;
 #ifdef __cplusplus
-#   define AS_BOOLEAN             bool
+#   define NULLPTR              nullptr
+#   define AS_BOOLEAN           bool
 #else
-#   define AS_BOOLEAN             _Bool
+#   define NULLPTR              ((void *)0)
+#   define AS_BOOLEAN           _Bool
 #endif
 #define TRUE                1
 #define FALSE               0
+
+// Pointer size
+#ifdef ASTRAL_64_BIT
+typedef AS_U64 AS_PTR;
+#else // Defaults to 32-bit
+typedef AS_U32 AS_PTR;
+#endif
 
 /*+++
 Min-Max definitions
