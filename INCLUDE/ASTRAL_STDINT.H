@@ -9,6 +9,8 @@ Licensed under the MIT License
 #ifndef ASTRAL_STDINT_H
 #define ASTRAL_STDINT_H
 
+#include <ASTRAL_MACROS.H>
+
 /*+++
 Type definitions
 
@@ -49,7 +51,7 @@ typedef double              AS_F64;
 /*+++
 Min-Max definitions
 ---*/
-#ifdef _WIN32
+#ifdef ASTRAL_PLATFORM_WINDOWS
 #   define I8_MIN              (-127i8 - 1)
 #   define I16_MIN             (-32767i16 - 1)
 #   define I32_MIN             (-2147483647i32 - 1)
@@ -64,7 +66,7 @@ Min-Max definitions
 #   define U64_MAX             0xffffffffffffffffui64
 #   define F32_MAX             3.402823466e+38F
 #   define F64_MAX             1.7976931348623158e+308
-#elif __linux__
+#elif ASTRAL_PLATFORM_LINUX
 #   define I8_MIN              (-128)
 #   define I16_MIN             (-32767-1)
 #   define I32_MIN             (-2147483647-1)
@@ -79,7 +81,7 @@ Min-Max definitions
 #   define U64_MAX             0xffffffffffffffff
 #   define F32_MAX             3.402823466e+38F
 #   define F64_MAX             1.7976931348623158e+308
-#else // Default to Windows
+#else // Defaults to Windows
 #   define I8_MIN              (-127i8 - 1)
 #   define I16_MIN             (-32767i16 - 1)
 #   define I32_MIN             (-2147483647i32 - 1)
@@ -94,5 +96,5 @@ Min-Max definitions
 #   define U64_MAX             0xffffffffffffffffui64
 #   define F32_MAX             3.402823466e+38F
 #   define F64_MAX             1.7976931348623158e+308
-#endif // _WIN32
+#endif // ASTRAL_PLATFORM_WINDOWS
 #endif // ASTRAL_STDINT_H
