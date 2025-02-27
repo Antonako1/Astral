@@ -11,22 +11,23 @@ Licensed under the MIT License
 #include <ASTRAL_STDINT.H>
 #include <ASTRAL_API.H>
 
-// Memory arena
-typedef struct _ASTRAL_M_ARENA {
-    AS_U0* NEXT_BLOCK;                 // Next free block
-    AS_U64 SIZE;                       // Size of the memory arena
-    AS_U8 *MEMORY;                     // Pointer to the memory
-} ASTRAL_M_ARENA, *PASTRAL_M_ARENA;
+#pragma ONLY_ON_WINDOWS_REMINDER("ASTRAL_M_ALLOC")
+/// @brief Allocates a memory block
+/// @param SIZE Size of the memory block
+/// @return U0, pointer to the memory block
+ASTRAL_EXPORT AS_U0 *ASTRAL_M_ALLOC(AS_U64 SIZE);
 
-/// @brief Allocate memory arena
-/// @param SIZE Size of the memory arena
-/// @param MEMORY Pointer to the memory
-/// @return ASTRAL_M_ARENA
-ASTRAL_EXPORT ASTRAL_M_ARENA ASTRAL_M_ARENA_ALLOC(AS_U64 SIZE, AS_U0* MEMORY);
+#pragma ONLY_ON_WINDOWS_REMINDER("ASTRAL_M_REALLOC")
+/// @brief Reallocates a memory block
+/// @param PTR Pointer to the memory block
+/// @param SIZE New size of the memory block
+/// @return U0, pointer to the new memory block
+ASTRAL_EXPORT AS_U0 *ASTRAL_M_REALLOC(AS_U0 *PTR, AS_U64 SIZE);
 
-/// @brief Get minimum recommended size for memory arena
-/// @return U64, minimum size for memory arena
-ASTRAL_EXPORT AS_U64 ASTRAL_M_MIN_SIZE(AS_U0);
-
+#pragma ONLY_ON_WINDOWS_REMINDER("ASTRAL_M_FREE")
+/// @brief Frees a memory block
+/// @param PTR Pointer to the memory block
+/// @return U0
+ASTRAL_EXPORT AS_U0 ASTRAL_M_FREE(AS_U0 *PTR);
 
 #endif // ASTRAL_MEMORY_H
