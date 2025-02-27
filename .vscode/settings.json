@@ -8,6 +8,12 @@
         "ASTRAL_WIN.C": "cpp",
         "ASTRAL_LINUX.C": "cpp",
         "ASTRAL_SHARED.C": "cpp",
-        "ASTRAL_LIBC.C": "cpp"
+        "ASTRAL_LIBC.C": "cpp",
+        "ASTRAL_MEMORY_WIN.C": "cpp",
+        "ASTRAL_WIN_MEM.C": "cpp",
+        "ASTRAL_WIN_CON.C": "cpp",
+        "ASTRAL_SHARED_MEM.C": "cpp",
+        "ASTRAL_SHARED_STR.C": "cpp",
+        "ASTRAL_SHARED_CON.C": "cpp"
     }
 }
