@@ -180,7 +180,7 @@ ASTRAL_EXPORT AS_STRING* ASTRAL_STR_CREATE(AS_U64 SIZE);
 /// @param DATA Text data
 /// @param DATA_SIZE Size of the data
 /// @return STRING, pointer to the string
-ASTRAL_EXPORT AS_STRING* ASTRAL_STR_CREATE(AS_U64 SIZE, AS_CHAR* DATA, AS_U64 DATA_SIZE);
+ASTRAL_EXPORT AS_STRING* ASTRAL_STR_CREATE_EX(AS_U64 SIZE, AS_CHAR* DATA, AS_U64 DATA_SIZE);
 
 /// @brief Copies a string
 /// @param DEST Destination string
@@ -192,7 +192,7 @@ ASTRAL_EXPORT AS_U64 ASTRAL_STR_COPY(AS_STRING* DEST, AS_STRING* SRC);
 /// @param DEST Destination string
 /// @param SRC Source string
 /// @return U64, length of the string
-ASTRAL_EXPORT AS_U64 ASTRAL_STR_COPY(AS_STRING* DEST, AS_CHAR* SRC, AS_U64 SIZE);
+ASTRAL_EXPORT AS_U64 ASTRAL_STR_COPY_CH(AS_STRING* DEST, AS_CHAR* SRC, AS_U64 SIZE);
 
 /// @brief Appends a string to another string
 /// @param DEST Destination string
@@ -204,7 +204,7 @@ ASTRAL_EXPORT AS_U64 ASTRAL_STR_APPEND(AS_STRING* DEST, AS_STRING* SRC);
 /// @param DEST Destination string
 /// @param SRC Source string
 /// @return U64, length of the string
-ASTRAL_EXPORT AS_U64 ASTRAL_STR_APPEND(AS_STRING* DEST, AS_CHAR* SRC, AS_U64 SIZE);
+ASTRAL_EXPORT AS_U64 ASTRAL_STR_APPEND_CH(AS_STRING* DEST, AS_CHAR* SRC, AS_U64 SIZE);
 
 /// @brief Compares two strings
 /// @param STR1 First string
@@ -217,7 +217,7 @@ ASTRAL_EXPORT AS_BOOLEAN ASTRAL_STR_CMP(AS_STRING* STR1, AS_STRING* STR2);
 /// @param STR2 Second string
 /// @param SIZE Size of STR2
 /// @return BOOLEAN, are the strings equal
-ASTRAL_EXPORT AS_BOOLEAN ASTRAL_STR_CMP(AS_STRING* STR1, AS_CHAR* STR2, AS_U64 SIZE);
+ASTRAL_EXPORT AS_BOOLEAN ASTRAL_STR_CMP_CH(AS_STRING* STR1, AS_CHAR* STR2, AS_U64 SIZE);
 
 /// @brief Frees a string
 /// @param STR String to free
@@ -250,7 +250,7 @@ ASTRAL_EXPORT AS_WSTRING* ASTRAL_WSTR_CREATE(AS_U64 SIZE);
 /// @param DATA Text data
 /// @param DATA_SIZE Size of the data
 /// @return STRING, pointer to the string
-ASTRAL_EXPORT AS_WSTRING* ASTRAL_WSTR_CREATE(AS_U64 SIZE, AS_WCHAR* DATA, AS_U64 DATA_SIZE);
+ASTRAL_EXPORT AS_WSTRING* ASTRAL_WSTR_CREATE_EX(AS_U64 SIZE, AS_WCHAR* DATA, AS_U64 DATA_SIZE);
 
 /// @brief Copies a string
 /// @param DEST Destination string
@@ -262,7 +262,7 @@ ASTRAL_EXPORT AS_U64 ASTRAL_WSTR_COPY(AS_WSTRING* DEST, AS_WSTRING* SRC);
 /// @param DEST Destination string
 /// @param SRC Source string
 /// @return U64, length of the string
-ASTRAL_EXPORT AS_U64 ASTRAL_WSTR_COPY(AS_WSTRING* DEST, AS_WCHAR* SRC, AS_U64 SIZE);
+ASTRAL_EXPORT AS_U64 ASTRAL_WSTR_COPY_WCH(AS_WSTRING* DEST, AS_WCHAR* SRC, AS_U64 SIZE);
 
 /// @brief Appends a string to another string
 /// @param DEST Destination string
@@ -274,7 +274,7 @@ ASTRAL_EXPORT AS_U64 ASTRAL_WSTR_APPEND(AS_WSTRING* DEST, AS_WSTRING* SRC);
 /// @param DEST Destination string
 /// @param SRC Source string
 /// @return U64, length of the string
-ASTRAL_EXPORT AS_U64 ASTRAL_WSTR_APPEND(AS_WSTRING* DEST, AS_WCHAR* SRC, AS_U64 SIZE);
+ASTRAL_EXPORT AS_U64 ASTRAL_WSTR_APPEND_WCH(AS_WSTRING* DEST, AS_WCHAR* SRC, AS_U64 SIZE);
 
 /// @brief Compares two strings
 /// @param STR1 First string
@@ -287,7 +287,7 @@ ASTRAL_EXPORT AS_BOOLEAN ASTRAL_WSTR_CMP(AS_WSTRING* STR1, AS_WSTRING* STR2);
 /// @param STR2 Second string
 /// @param SIZE Size of STR2
 /// @return BOOLEAN, are the strings equal
-ASTRAL_EXPORT AS_BOOLEAN ASTRAL_WSTR_CMP(AS_WSTRING* STR1, AS_WCHAR* STR2, AS_U64 SIZE);
+ASTRAL_EXPORT AS_BOOLEAN ASTRAL_WSTR_CMP_WCH(AS_WSTRING* STR1, AS_WCHAR* STR2, AS_U64 SIZE);
 
 /// @brief Frees a string
 /// @param STR String to free

@@ -18,7 +18,7 @@ Licensed under the MIT License
 #include <ASTRAL_STRING.H>
 
 #if ASTRAL_PLATFORM_WINDOWS
-    #include <Windows.h> // For HANDLE
+#   include <Windows.h>
 #endif
 
 /// @brief Console size structure
@@ -209,7 +209,7 @@ ASTRAL_EXPORT AS_U0 SET_CON_COLOUR_F(ASTRAL_CON_COLOUR* COLOUR, AS_U8 R, AS_U8 G
 /// @param COLOUR Pointer to the colour structure
 /// @param RGBA RGBA value, use the RGBA macro to create a colour
 /// @return U0
-ASTRAL_EXPORT AS_U0 SET_CON_COLOUR_F(ASTRAL_CON_COLOUR* COLOUR, AS_U32 RGBA);
+ASTRAL_EXPORT AS_U0 SET_CON_COLOUR_F_M(ASTRAL_CON_COLOUR* COLOUR, AS_U32 RGBA);
 
 /// @brief Sets the console colour structure with the given RGB values for the background
 /// @param COLOUR Pointer to the colour structure
@@ -224,7 +224,7 @@ ASTRAL_EXPORT AS_U0 SET_CON_COLOUR_B(ASTRAL_CON_COLOUR* COLOUR, AS_U8 R, AS_U8 G
 /// @param COLOUR Pointer to the colour structure
 /// @param RGBA RGBA value, use the RGBA macro to create a colour
 /// @return U0
-ASTRAL_EXPORT AS_U0 SET_CON_COLOUR_B(ASTRAL_CON_COLOUR* COLOUR, AS_U32 RGBA);
+ASTRAL_EXPORT AS_U0 SET_CON_COLOUR_B_M(ASTRAL_CON_COLOUR* COLOUR, AS_U32 RGBA);
 
 /// @brief Basic string object
 typedef struct _ASTRAL_CON_STR_OBJ {

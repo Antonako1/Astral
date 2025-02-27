@@ -1,0 +1,40 @@
+/*+++
+Contains shared, non-platform specific code for the ASTRAL library.
+
+For ASTRAL_CON.H
+---*/
+
+#include <ASTRAL.H>
+
+/*+++
+ASTRAL_CON.H
+---*/
+
+AS_BOOLEAN ASTRAL_CON_IS_RUNNING(ASTRAL_CONSOLE* CONSOLE) {
+    return CONSOLE->RUNNING;
+}
+
+AS_U0 SET_CON_COLOUR_F(ASTRAL_CON_COLOUR* COLOUR, AS_U8 R, AS_U8 G, AS_U8 B, AS_U8 A) {
+    COLOUR->R_F = R;
+    COLOUR->G_F = G;
+    COLOUR->B_F = B;
+    COLOUR->A_F = A;
+}
+AS_U0 SET_CON_COLOUR_F_M(ASTRAL_CON_COLOUR* COLOUR, AS_U32 RGBA) {
+    COLOUR->R_F = (AS_U8)(RGBA >> 24);
+    COLOUR->G_F = (AS_U8)(RGBA >> 16);
+    COLOUR->B_F = (AS_U8)(RGBA >> 8);
+    COLOUR->A_F = (AS_U8)(RGBA);
+}
+AS_U0 SET_CON_COLOUR_B(ASTRAL_CON_COLOUR* COLOUR, AS_U8 R, AS_U8 G, AS_U8 B, AS_U8 A) {
+    COLOUR->R_B = R;
+    COLOUR->G_B = G;
+    COLOUR->B_B = B;
+    COLOUR->A_B = A;
+}
+AS_U0 SET_CON_COLOUR_B_M(ASTRAL_CON_COLOUR* COLOUR, AS_U32 RGBA) {
+    COLOUR->R_B = (AS_U8)(RGBA >> 24);
+    COLOUR->G_B = (AS_U8)(RGBA >> 16);
+    COLOUR->B_B = (AS_U8)(RGBA >> 8);
+    COLOUR->A_B = (AS_U8)(RGBA);
+}
