@@ -2,6 +2,7 @@
 ASTRAL_STRING.H
 Author: Antonako1
 Description: Astral string header file
+             Contains string functions, structures and definitions
 Licensed under the MIT License
 ---*/
 
