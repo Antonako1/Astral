@@ -20,14 +20,20 @@ Licensed under the MIT License
     #define ASTRAL_PLATFORM_WINDOWS 1
 #elif defined(__linux__)
     #define ASTRAL_PLATFORM_LINUX 1
-#elif defined(__APPLE__)
+/*+++
+
+Currently unsupported platforms
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+#elif defined(__APPLE__) || defined(__MACH__)
     #define ASTRAL_PLATFORM_APPLE 1
 #elif defined(__unix__)
     #define ASTRAL_PLATFORM_UNIX 1
 #elif defined(__posix__)
     #define ASTRAL_PLATFORM_POSIX 1
+---*/
 #else
-    #error "Unsupported platform! You must define a function for this platform."
+    #error "Unsupported platform! Please add support for your platform."
 #endif
 
 // Compiler detection
@@ -43,66 +49,43 @@ Licensed under the MIT License
     #define ASTRAL_COMPILER_UNKNOWN 1
 #endif
 
-/*+++
-ASTRAL_FUNC_CHOOSE(...) - Selects the correct function based on the platform.
-Usage:
-    #define MY_EXPORT_FUNCTION ASTRAL_FUNC_CHOOSE(
-        WINDOWS_FUNCTION,
-        LINUX_FUNCTION
-    )
-
-- The first matching function is selected based on the platform.
-- If no match is found, compilation **fails** (no default fallback).
-- Requires at least **one function per platform**.
----*/
-
-// Macro to choose function based on platform
-#define ASTRAL_FUNC_CHOOSE(...) ASTRAL_FUNC_SELECT(__VA_ARGS__)
-
-// Selects the first function that matches a platform, compilation fails if no match
-#define ASTRAL_FUNC_SELECT(WIN, LINUX, ...)     \
-    ASTRAL_IFDEF(ASTRAL_PLATFORM_WINDOWS, WIN,  \
-    ASTRAL_IFDEF(ASTRAL_PLATFORM_LINUX, LINUX,  \
-    _ASTRAL_NO_MATCH()                          \
-                )                               \
-                )
-
-// If no platform is matched, throw a compiler error
-#define _ASTRAL_NO_MATCH() static_assert(0, "ASTRAL_FUNC_CHOOSE: No matching function for the current platform!")
-
-// Helper macro for conditional selection
-#define ASTRAL_IFDEF(platform, func, next) ASTRAL_IFDEF_IMPL(platform, func, next)
-#define ASTRAL_IFDEF_IMPL(platform, func, next) ASTRAL_IFDEF_##platform(func, next)
-
-// Expanding macros based on platform
-#if defined(ASTRAL_PLATFORM_WINDOWS)
-    #define ASTRAL_IFDEF_ASTRAL_PLATFORM_WINDOWS(func, next) func
+// Architecture detection
+#if defined(__x86_64__) || defined(_M_X64)
+    #define ASTRAL_ARCH_X64 1
+#elif defined(i386) || defined(__i386__) || defined(__i386) || defined(_M_IX86)
+    #define ASTRAL_ARCH_X86 1
+#elif defined(__aarch64__) || defined(_M_ARM64)
+    #define ASTRAL_ARCH_ARM64 1
+#elif defined(__arm__) || defined(_M_ARM)
+    #define ASTRAL_ARCH_ARM 1
 #else
-    #define ASTRAL_IFDEF_ASTRAL_PLATFORM_WINDOWS(func, next) next
+    #define ASTRAL_ARCH_UNKNOWN 1
 #endif
 
-#if defined(ASTRAL_PLATFORM_LINUX)
-    #define ASTRAL_IFDEF_ASTRAL_PLATFORM_LINUX(func, next) func
+#define STRINGIFY(x) #x
+#define TOSTRING(x) STRINGIFY(x)
+// Only on Windows reminder
+#ifdef ASTRAL_PLATFORM_WINDOWS
+    #define ONLY_ON_WINDOWS_REMINDER(x)
 #else
-    #define ASTRAL_IFDEF_ASTRAL_PLATFORM_LINUX(func, next) next
+    #define ONLY_ON_WINDOWS_REMINDER(x) \
+        message(__FILE__ ":" TOSTRING(__LINE__) ": Reminder: " x " is only implemented on Windows")
 #endif
 
-#if defined(ASTRAL_PLATFORM_APPLE)
-    #define ASTRAL_IFDEF_ASTRAL_PLATFORM_APPLE(func, next) func
+// Only on Linux reminder
+#ifdef ASTRAL_PLATFORM_LINUX
+    #define ONLY_ON_LINUX_REMINDER(x)
 #else
-    #define ASTRAL_IFDEF_ASTRAL_PLATFORM_APPLE(func, next) next
+    #define ONLY_ON_LINUX_REMINDER(x) \
+        message(__FILE__ ":" TOSTRING(__LINE__) ": Reminder: " x " is only implemented on Linux")
 #endif
 
-#if defined(ASTRAL_PLATFORM_UNIX)
-    #define ASTRAL_IFDEF_ASTRAL_PLATFORM_UNIX(func, next) func
+// Only on Windows and Linux reminder
+#if defined(ASTRAL_PLATFORM_WINDOWS) || defined(ASTRAL_PLATFORM_LINUX)
+    #define ONLY_ON_WINDOWS_AND_LINUX_REMINDER(x)
 #else
-    #define ASTRAL_IFDEF_ASTRAL_PLATFORM_UNIX(func, next) next
-#endif
-
-#if defined(ASTRAL_PLATFORM_POSIX)
-    #define ASTRAL_IFDEF_ASTRAL_PLATFORM_POSIX(func, next) func
-#else
-    #define ASTRAL_IFDEF_ASTRAL_PLATFORM_POSIX(func, next) next
+    #define ONLY_ON_WINDOWS_AND_LINUX_REMINDER(x) \
+        message(__FILE__ ":" TOSTRING(__LINE__) ": Reminder: " x " is only implemented on Windows and Linux")
 #endif
 
 #endif // ASTRAL_MACROS_H
