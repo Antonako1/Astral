@@ -3,14 +3,8 @@
 #include <stdlib.h>
 
 int main(void) {
-
-    AS_U64 min_size = ASTRAL_M_MIN_SIZE();
-    ASTRAL_M_ARENA arena = ASTRAL_M_ARENA_ALLOC(min_size, (AS_U0*)malloc(min_size));
-    
-    ASTRAL_CONSOLE console = ASTRAL_CON_CREATE(&arena);
-    
+    ASTRAL_CONSOLE console = ASTRAL_CON_CREATE();
     ASTRAL_CON_APPLY_MODES(&console, ASTRAL_CON_MODE_MOUSE_INPUT | ASTRAL_CON_MODE_IGNORE_CTRL_C);
-    
     ASTRAL_CON_EVENT input;
     AS_U64 i = 0;
     while(ASTRAL_CON_IS_RUNNING(&console)) {
@@ -26,8 +20,8 @@ int main(void) {
                 printf("No event\n");
                 break;
         }
-        if(i++ > 10) break;
+        if(i++ > 10) break; // TEMP: <-
     }
-    ASTRAL_CON_END_CONSOLE(&console);
+    ASTRAL_CON_DELETE(&console);
     return 0;
 }
