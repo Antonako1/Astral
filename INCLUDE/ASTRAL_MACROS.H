@@ -36,6 +36,19 @@ Currently unsupported platforms
     #error "Unsupported platform! Please add support for your platform."
 #endif
 
+// Endianness detection
+#if defined(__BYTE_ORDER__) && defined(__ORDER_LITTLE_ENDIAN__) && defined(__ORDER_BIG_ENDIAN__)
+    #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+        #define ASTRAL_LITTLE_ENDIAN 1
+    #elif __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
+        #define ASTRAL_BIG_ENDIAN 1
+    #else
+        #define ASTRAL_UNKNOWN_ENDIAN 1
+    #endif
+#else
+    #define ASTRAL_UNKNOWN_ENDIAN 1
+#endif
+
 // Compiler detection
 #if defined(_MSC_VER)
     #define ASTRAL_COMPILER_MSVC 1
@@ -52,12 +65,17 @@ Currently unsupported platforms
 // Architecture detection
 #if defined(__x86_64__) || defined(_M_X64)
     #define ASTRAL_ARCH_X64 1
+    #define ASTRAL_ARCH_X86_64 1
+    #define ASTRAL_64_BIT 1
 #elif defined(i386) || defined(__i386__) || defined(__i386) || defined(_M_IX86)
     #define ASTRAL_ARCH_X86 1
+    #define ASTRAL_32_BIT 1
 #elif defined(__aarch64__) || defined(_M_ARM64)
     #define ASTRAL_ARCH_ARM64 1
+    #define ASTRAL_64_BIT 1
 #elif defined(__arm__) || defined(_M_ARM)
     #define ASTRAL_ARCH_ARM 1
+    #define ASTRAL_32_BIT 1
 #else
     #define ASTRAL_ARCH_UNKNOWN 1
 #endif
