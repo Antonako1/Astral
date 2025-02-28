@@ -18,5 +18,8 @@ Licensed under the MIT License
 /// @return BOOLEAN, TRUE if successful, FALSE otherwise
 ASTRAL_EXPORT AS_BOOLEAN ASTRAL_D_TREE(AS_U0* ROOT, AS_U64 MAX_LEVEL);
 
+/// @brief Retrieve the last error code
+/// @return U64, the last error code
+ASTRAL_EXPORT AS_U64 ASTRAL_D_GET_LAST_ERROR();
 
 #endif // ASTRAL_DEBUG_H
