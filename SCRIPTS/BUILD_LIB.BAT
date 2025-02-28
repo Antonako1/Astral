@@ -10,7 +10,6 @@ if %ERRORLEVEL% NEQ 0 (
     echo.
     echo Build failed with error code %ERRORLEVEL%.
     echo.
-    pause
     exit /b %ERRORLEVEL%
 )
 
@@ -19,7 +18,6 @@ if %ERRORLEVEL% NEQ 0 (
     echo.
     echo Build failed with error code %ERRORLEVEL%.
     echo.
-    pause
     exit /b %ERRORLEVEL%
 )
 
