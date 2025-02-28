@@ -1,4 +1,4 @@
-List of function that need to be developed as cross-platform
+List of functions that need to be developed as cross-platform
 
  - ASTRAL_CON.H
     - ASTRAL_CON_CREATE
