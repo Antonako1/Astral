@@ -1,19 +1,19 @@
 {
     "files.associations": {
-        "TEST.C": "cpp",
-        "ASTRAL_UI_1.C": "cpp",
-        "WINDOWS_MAIN.C": "cpp",
-        "ASTRAL_LINUX_MAIN.C": "cpp",
-        "ASTRAL_WINDOWS_MAIN.C": "cpp",
-        "ASTRAL_WIN.C": "cpp",
-        "ASTRAL_LINUX.C": "cpp",
-        "ASTRAL_SHARED.C": "cpp",
-        "ASTRAL_LIBC.C": "cpp",
-        "ASTRAL_MEMORY_WIN.C": "cpp",
-        "ASTRAL_WIN_MEM.C": "cpp",
-        "ASTRAL_WIN_CON.C": "cpp",
-        "ASTRAL_SHARED_MEM.C": "cpp",
-        "ASTRAL_SHARED_STR.C": "cpp",
-        "ASTRAL_SHARED_CON.C": "cpp"
+        "TEST.C": "c",
+        "ASTRAL_UI_1.C": "c",
+        "WINDOWS_MAIN.C": "c",
+        "ASTRAL_LINUX_MAIN.C": "c",
+        "ASTRAL_WINDOWS_MAIN.C": "c",
+        "ASTRAL_WIN.C": "c",
+        "ASTRAL_LINUX.C": "c",
+        "ASTRAL_SHARED.C": "c",
+        "ASTRAL_LIBC.C": "c",
+        "ASTRAL_MEMORY_WIN.C": "c",
+        "ASTRAL_WIN_MEM.C": "c",
+        "ASTRAL_WIN_CON.C": "c",
+        "ASTRAL_SHARED_MEM.C": "c",
+        "ASTRAL_SHARED_STR.C": "c",
+        "ASTRAL_SHARED_CON.C": "c"
     }
 }
