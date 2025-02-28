@@ -7,6 +7,7 @@ List of functions that need to be developed as cross-platform
     - ASTRAL_CON_GET_EVENT
     - ASTRAL_CON_CLEAR
     - ASTRAL_CON_GET_SPEC_KEY_STATE
+    - ASTRAL_CON_GET_SIZE
 
  - ASTRAL_MEMORY.H
     - ASTRAL_M_ALLOC
