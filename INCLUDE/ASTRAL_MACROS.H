@@ -57,6 +57,8 @@ Currently unsupported platforms
     #define ASTRAL_64_BIT 1
 #elif defined(i386) || defined(__i386__) || defined(__i386) || defined(_M_IX86)
     #define ASTRAL_ARCH_X86 1
+    #define ASTRAL_ARCH_I386 1
+    #define ASTRAL_ARCH_IA32 1
     #define ASTRAL_32_BIT 1
 #elif defined(__aarch64__) || defined(_M_ARM64)
     #define ASTRAL_ARCH_ARM64 1
