@@ -18,10 +18,10 @@ Licensed under the MIT License
 // Platform detection
 #if defined(_WIN32) || defined(_WIN64)
     #define ASTRAL_PLATFORM_WINDOWS 1
-#elif defined(__linux__)
+#elif defined(__linux__) || defined(__unix__)
     #define ASTRAL_PLATFORM_LINUX 1
-/*+++
 
+/*+++
 Currently unsupported platforms
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -32,21 +32,9 @@ Currently unsupported platforms
 #elif defined(__posix__)
     #define ASTRAL_PLATFORM_POSIX 1
 ---*/
+
 #else
     #error "Unsupported platform! Please add support for your platform."
-#endif
-
-// Endianness detection
-#if defined(__BYTE_ORDER__) && defined(__ORDER_LITTLE_ENDIAN__) && defined(__ORDER_BIG_ENDIAN__)
-    #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
-        #define ASTRAL_LITTLE_ENDIAN 1
-    #elif __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
-        #define ASTRAL_BIG_ENDIAN 1
-    #else
-        #define ASTRAL_UNKNOWN_ENDIAN 1
-    #endif
-#else
-    #define ASTRAL_UNKNOWN_ENDIAN 1
 #endif
 
 // Compiler detection
