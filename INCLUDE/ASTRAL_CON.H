@@ -33,11 +33,23 @@ typedef struct _ASTRAL_CON_COORD {
     AS_U64 Y;                   // Y position
 } ASTRAL_CON_COORD, *PASTRAL_CON_COORD;
 
+/// @brief Creates a console coordinate structure
+/// @param X X position
+/// @param Y Y position
+/// @return ASTRAL_CON_COORD, coordinate structure
+ASTRAL_EXPORT ASTRAL_CON_COORD ASTRAL_CON_CREATE_COORD(AS_U64 X, AS_U64 Y);
+
 /// @brief Console size structure
 typedef struct _ASTRAL_CON_SIZE {
     AS_U64 WIDTH;               // Width
     AS_U64 HEIGHT;              // Height
 } ASTRAL_CON_SIZE, *PASTRAL_CON_SIZE;
+
+/// @brief Creates a console size structure
+/// @param WIDTH Width
+/// @param HEIGHT Height
+/// @return ASTRAL_CON_SIZE, size structure
+ASTRAL_EXPORT ASTRAL_CON_SIZE ASTRAL_CON_CREATE_SIZE(AS_U64 WIDTH, AS_U64 HEIGHT);
 
 /*+++
 
@@ -328,7 +340,7 @@ typedef struct _ASTRAL_CON_STYLING {
     AS_U64              BORDER_RADIUS;  // Border radius
     AS_U64              BORDER_WIDTH;   // Border width
     ASTRAL_CON_COLOUR   BORDER_COLOUR;  // Border colour
-    AS_U64              BORDER_STYLE;   // Border style
+    AS_U64              BORDER_STYLE;   // Border style. Use DEFINES
     ASTRAL_CON_SIZE     SIZE;           // Size
 } ASTRAL_CON_STYLING, *PASTRAL_CON_STYLING;
 
@@ -465,6 +477,11 @@ typedef struct _ASTRAL_CON_UI_ELEM {
     AS_U64 SZ;
 } ASTRAL_CON_UI_ELEM, *PASTRAL_CON_UI_ELEM;
 
+
+/// @brief Gets the current size of the console, updating the CONSOLE struct
+/// @param CONSOLE Pointer to the console struct
+/// @return BOOLEAN, success
+AS_BOOLEAN ASTRAL_CON_GET_SIZE(ASTRAL_CONSOLE* CONSOLE);
 
 /// @brief Creates a new string object. Free with ASTRAL_CON_FREE_STR_OBJ
 /// @param STRING String data. This data will be copied
