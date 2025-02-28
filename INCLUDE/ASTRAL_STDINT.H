@@ -59,25 +59,13 @@ typedef AS_U64 AS_PTR;
 typedef AS_U32 AS_PTR;
 #endif
 
+#define CONST const
+
 /*+++
 Min-Max definitions
 ---*/
-#ifdef ASTRAL_PLATFORM_WINDOWS
-#   define I8_MIN              (-127i8 - 1)
-#   define I16_MIN             (-32767i16 - 1)
-#   define I32_MIN             (-2147483647i32 - 1)
-#   define I64_MIN             (-9223372036854775807i64)
-#   define I8_MAX              127i8
-#   define I16_MAX             32767i16
-#   define I32_MAX             2147483647i32
-#   define I64_MAX             9223372036854775807i64
-#   define U8_MAX              0xffui8
-#   define U16_MAX             0xffffui16
-#   define U32_MAX             0xffffffffui32
-#   define U64_MAX             0xffffffffffffffffui64
-#   define F32_MAX             3.402823466e+38F
-#   define F64_MAX             1.7976931348623158e+308
-#elif ASTRAL_PLATFORM_LINUX
+
+#if defined(ASTRAL_PLATFORM_LINUX)
 #   define I8_MIN              (-128)
 #   define I16_MIN             (-32767-1)
 #   define I32_MIN             (-2147483647-1)
@@ -108,6 +96,12 @@ Min-Max definitions
 #   define F32_MAX             3.402823466e+38F
 #   define F64_MAX             1.7976931348623158e+308
 #endif // ASTRAL_PLATFORM_WINDOWS
+
+#if ASTRAL_32_BIT 
+#   define U64_MAX             U32_MAX
+#   define I64_MAX             I32_MAX
+#   define I64_MIN             I32_MIN
+#endif
 
 #define _1_BYTE_FIT             0x10
 #define _2_BYTE_FIT             0x1000
