@@ -27,157 +27,33 @@ typedef AS_I32 HANDLE;
 #   error "Unsupported platform for ASTRAL_CON.H's HANDLE definition"
 #endif
 
-/// @brief Console size structure
-typedef struct _ASTRAL_CON_SIZE {
-    AS_U64 WIDTH;               // Width
-    AS_U64 HEIGHT;              // Height
-} ASTRAL_CON_SIZE, *PASTRAL_CON_SIZE;
-
 /// @brief Console coordinate structure
 typedef struct _ASTRAL_CON_COORD {
     AS_U64 X;                   // X position
     AS_U64 Y;                   // Y position
 } ASTRAL_CON_COORD, *PASTRAL_CON_COORD;
 
-/// @brief Console structure
-typedef struct _ASTRAL_CONSOLE {
-    ASTRAL_CON_SIZE SZ;         // Console size
-
-    AS_U8 *BUFFER;              // Buffer for the console
-    AS_U64 BUFFER_SIZE;         // Size of the buffer
-    
-    HANDLE HANDLEIN;            // Handle to the console input
-    HANDLE HANDLEOUT;           // Handle to the console output
-
-    AS_BOOLEAN RUNNING;         // Is the console running
-    
-    AS_U32 CON_MODE;            // Console mode
-    AS_U32 OG_MODE;             // Original console mode
-
-    AS_U32 OGOCHCP;             // Original output console code page
-    AS_U32 OGCHCP;              // Original console code page
-
-    ASTRAL_CON_UI_ELEM ROOT;    // Root element
-} ASTRAL_CONSOLE, *PASTRAL_CONSOLE;
-
-/// @brief Mouse event structure
-typedef struct _ASTRAL_CON_MOUSE_EVENT {
-    AS_U64 BUTTON_STATE;        // Button state
-    AS_U64 BUTTONS;             // Buttons
-    AS_U64 X;                   // X position
-    AS_U64 Y;                   // Y position
-} ASTRAL_CON_MOUSE_EVENT, *PASTRAL_CON_MOUSE_EVENT;
- 
-/// @brief Key event structure
-typedef struct _ASTRAL_CON_KEY_EVENT {
-    AS_U64 KEY_STATE;           // Key state
-    AS_U64 KEY_CODE;            // Key code
-    AS_U64 CHAR;                // Character
-} ASTRAL_CON_KEY_EVENT, *PASTRAL_CON_KEY_EVENT;
-
-/// @brief Resize event structure
-typedef struct _ASTRAL_CON_RESIZE_EVENT {
+/// @brief Console size structure
+typedef struct _ASTRAL_CON_SIZE {
     AS_U64 WIDTH;               // Width
     AS_U64 HEIGHT;              // Height
-} ASTRAL_CON_RESIZE_EVENT, *PASTRAL_CON_RESIZE_EVENT;
-
-/// @brief Menu event structure
-typedef struct _ASTRAL_CON_MENU_EVENT {
-    AS_U64 MENU_ID;             // Menu ID
-} ASTRAL_CON_MENU_EVENT, *PASTRAL_CON_MENU_EVENT;
-
-/// @brief Focus event structure. Contains the focus state
-typedef struct _ASTRAL_CON_FOCUS_EVENT {
-    AS_U64 FOCUS_STATE;         // Focus state
-} ASTRAL_CON_FOCUS_EVENT, *PASTRAL_CON_FOCUS_EVENT;
+} ASTRAL_CON_SIZE, *PASTRAL_CON_SIZE;
 
 /*+++
-Console event types
+
+        |~~~~~~~~~~~|
+        |UI ELEMENTS|
+        |~~~~~~~~~~~|
+
+    UI elements are used to create a user interface in the console.
+
+    UI is constructed using boxes that stack child elements vertically or horizontally.
+    Elements can be buttons, text, other boxes, etc.
+
+    Main types are buttons, text, boxes, etc.
+        Sub types are more specific types of the main types.
+
 ---*/
-#define ASTRAL_CON_EVENT_KEY         0x00000001 // Key event
-#define ASTRAL_CON_EVENT_MOUSE       0x00000002 // Mouse event
-#define ASTRAL_CON_EVENT_RESIZE      0x00000004 // Resize event
-#define ASTRAL_CON_EVENT_MENU        0x00000008 // Menu event
-#define ASTRAL_CON_EVENT_FOCUS       0x00000010 // Focus event
-#define ASTRAL_CON_EVENT_NO_EVENT    0x00000020 // No event
-
-/// @brief Console event structure
-typedef struct _ASTRAL_CON_EVENT {
-    AS_U64 EVENTS_READ;         // Events read
-    AS_U32 EVENT_TYPE;          // Event type
-    AS_U64 EVENT_SIZE;          // Size of the event
-    AS_U8* EVENT_DATA;          // Event data
-    ASTRAL_CON_MOUSE_EVENT  _MOUSE_EVENT;
-    ASTRAL_CON_KEY_EVENT    _KEY_EVENT;
-    ASTRAL_CON_RESIZE_EVENT _RESIZE_EVENT;
-    ASTRAL_CON_MENU_EVENT   _MENU_EVENT;
-    ASTRAL_CON_FOCUS_EVENT  _FOCUS_EVENT;
-} ASTRAL_CON_EVENT, *PASTRAL_CON_EVENT;
-
-#pragma ONLY_ON_WINDOWS_REMINDER("ASTRAL_CON_GET_EVENT")
-/// @brief Retrieves the next console event
-/// @param CONSOLE Console to get event from
-/// @param EVENT Event to store the event in
-ASTRAL_EXPORT AS_U0 ASTRAL_CON_GET_EVENT(ASTRAL_CONSOLE* CONSOLE, ASTRAL_CON_EVENT* EVENT);
-
-/// @brief Checks if the console is running. Use as the main loop condition
-/// @param CONSOLE Console to check
-/// @return BOOLEAN, is running
-ASTRAL_EXPORT AS_BOOLEAN ASTRAL_CON_IS_RUNNING(ASTRAL_CONSOLE* CONSOLE);
-
-
-#pragma ONLY_ON_WINDOWS_REMINDER("ASTRAL_CON_CREATE")
-/// @brief Creates a new console
-/// @return ASTRAL_CONSOLE
-ASTRAL_EXPORT ASTRAL_CONSOLE ASTRAL_CON_CREATE();
-
-#pragma ONLY_ON_WINDOWS_REMINDER("ASTRAL_CON_DELETE")
-/// @brief Releases the console, restores original console mode
-/// @param CONSOLE Console to release
-/// @return BOOLEAN, success
-ASTRAL_EXPORT AS_BOOLEAN ASTRAL_CON_DELETE(ASTRAL_CONSOLE* CONSOLE);
-
-
-#pragma ONLY_ON_WINDOWS_REMINDER("ASTRAL_CON_CLS")
-/// @brief Clears the console screen
-/// @param CONSOLE Console to clear
-/// @return U16, error code (0 = success)
-ASTRAL_EXPORT AS_U16 ASTRAL_CON_CLS(ASTRAL_CONSOLE* CONSOLE);
-
-
-
-
-
-
-/*+++
-        |~~~~~~~~~~~~~~~~~~|
-        |  Console modes   |
-        |~~~~~~~~~~~~~~~~~~|
-
-Console modes. Apply with ASTRAL_CON_APPLY_MODES.
-
-Use bitwise OR ('|') to combine modes.
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Example:
-    ASTRAL_CON_MODE_IGNORE_CTRL_C | ASTRAL_CON_MODE_MOUSE_INPUT
-        --> Ignore CTRL+C and enable mouse input for the console
----*/
-#define ASTRAL_CON_MODE_IGNORE_CTRL_C       0x00000001  // Ignore CTRL+C
-#define ASTRAL_CON_MODE_MOUSE_INPUT         0x00000002  // Mouse input, allows mouse events
-
-
-#pragma ONLY_ON_WINDOWS_REMINDER("ASTRAL_CON_APPLY_MODES")
-/// @brief Applies console modes
-/// @param CONSOLE Console to apply modes to
-/// @param MODES Modes to apply
-/// @return BOOLEAN, success
-ASTRAL_EXPORT AS_BOOLEAN ASTRAL_CON_APPLY_MODES(ASTRAL_CONSOLE* CONSOLE, AS_U64 MODES);
-
-
-
-
-
 
 /*+++
         |~~~~~~~~~~~~~~~~~~|
@@ -199,6 +75,12 @@ ASTRAL_EXPORT AS_BOOLEAN ASTRAL_CON_APPLY_MODES(ASTRAL_CONSOLE* CONSOLE, AS_U64 
 
 // 4 bytes for the colour
 #define RGBA(r, g, b, a) ((AS_U32)(((AS_U8)(r)|((AS_U16)((AS_U8)(g))<<8))|(((AS_U32)(AS_U8)(b))<<16)|(((AS_U32)(AS_U8)(a))<<24)))
+
+/// @brief Converts an ASTRAL_CON_COLOUR structure to an AS_U32 RGBA value
+#define ACCF_TO_U32(ACC) ((AS_U32)(ACC.R_F | (ACC.G_F << 8) | (ACC.B_F << 16) | (ACC.A_F << 24)))
+
+/// @brief Converts an ASTRAL_CON_COLOUR structure to an AS_U32 RGBA value
+#define ACCB_TO_U32(ACC) ((AS_U32)(ACC.R_B | (ACC.G_B << 8) | (ACC.B_B << 16) | (ACC.A_B << 24)))
 
 /// @brief Console colour structure. Contains foreground and background colours
 typedef struct _ASTRAL_CON_COLOUR {
@@ -243,27 +125,11 @@ ASTRAL_EXPORT AS_U0 ASTRAL_CON_SET_COLOUR_B(ASTRAL_CON_COLOUR* COLOUR, AS_U8 R, 
 /// @return U0
 ASTRAL_EXPORT AS_U0 ASTRAL_CON_SET_COLOUR_B_M(ASTRAL_CON_COLOUR* COLOUR, AS_U32 RGBA);
 
-
-
-
-
-
-/*+++
-
-        |~~~~~~~~~~~|
-        |UI ELEMENTS|
-        |~~~~~~~~~~~|
-
-    UI elements are used to create a user interface in the console.
-
-    UI is constructed using boxes that stack child elements vertically or horizontally.
-    Elements can be buttons, text, other boxes, etc.
-
-    Main types are buttons, text, boxes, etc.
-        Sub types are more specific types of the main types.
-
----*/
-
+/// @brief Creates COLOUR structure with the given RGBA values for the foreground and background
+/// @param RGBA_F RGBA value for the foreground
+/// @param RGBA_B RGBA value for the background
+/// @return ASTRAL_CON_COLOUR, colour structure
+ASTRAL_EXPORT ASTRAL_CON_COLOUR ASTRAL_CON_CREATE_COLOUR_F_B_M(AS_U32 RGBA_F, AS_U32 RGBA_B);
 
 
 /*+++
@@ -403,6 +269,9 @@ ASTRAL_EXPORT AS_U0 ASTRAL_CON_SET_COLOUR_B_M(ASTRAL_CON_COLOUR* COLOUR, AS_U32 
 #define BORDER_STYLE_CUSTOM_ASCII   0x00000009 // Custom ASCII border
 #define BORDER_STYLE_CUSTOM_UTF8    0x0000000A // Custom UTF-8 border
 
+#define BORDER_STYLE_NONE           0x00000000 // No border
+#define BORDER_STYLE_DEFAULT        BORDER_STYLE_ASCII_SOLID // Default border style
+
 /// @brief Sets the predefined ASCII border style
 /// @param BORDER_STYLE Border style, see info above in the ABOUT BORDERS section
 ASTRAL_EXPORT AS_U0 ASTRAL_CON_SET_CUSTOM_ASCII_BORDER(AS_U8* BORDER_STYLE);
@@ -429,12 +298,28 @@ typedef struct _ASTRAL_CON_MARGIN {
     AS_U64 RIGHT;
 } ASTRAL_CON_MARGIN, *PASTRAL_CON_MARGIN;
 
+/// @brief Creates a margin structure
+/// @param TOP Margin from the top
+/// @param BOTTOM Margin from the bottom
+/// @param LEFT Margin from the left
+/// @param RIGHT Margin from the right
+/// @return ASTRAL_CON_MARGIN, margin structure
+ASTRAL_EXPORT ASTRAL_CON_MARGIN ASTRAL_CON_CREATE_MARGIN(AS_U64 TOP, AS_U64 BOTTOM, AS_U64 LEFT, AS_U64 RIGHT);
+
 typedef struct _ASTRAL_CON_PADDING {
     AS_U64 TOP;
     AS_U64 BOTTOM;
     AS_U64 LEFT;
     AS_U64 RIGHT;
 } ASTRAL_CON_PADDING, *PASTRAL_CON_PADDING;
+
+/// @brief Creates a padding structure
+/// @param TOP Padding from the top
+/// @param BOTTOM Padding from the bottom
+/// @param LEFT Padding from the left
+/// @param RIGHT Padding from the right
+/// @return ASTRAL_CON_PADDING, padding structure
+ASTRAL_EXPORT ASTRAL_CON_PADDING ASTRAL_CON_CREATE_PADDING(AS_U64 TOP, AS_U64 BOTTOM, AS_U64 LEFT, AS_U64 RIGHT);
 
 typedef struct _ASTRAL_CON_STYLING {
     ASTRAL_CON_COLOUR   COLOUR;         // Colour
@@ -462,11 +347,12 @@ typedef struct _ASTRAL_CON_STR_OBJ {
 
 
 // UI Element types
-#define ASTRAL_CON_UI_ELEM_TYPE_BUTTON      0x00000001 // See sub types
-#define ASTRAL_CON_UI_ELEM_TYPE_TEXT        0x00000002 // See sub types
-#define ASTRAL_CON_UI_ELEM_TYPE_BOX         0x00000003 // See sub types
+#define ASTRAL_CON_UI_ELEM_TYPE_BUTTON      0x00000001 // Button. See sub types
+#define ASTRAL_CON_UI_ELEM_TYPE_TEXT        0x00000002 // Text. See sub types
+#define ASTRAL_CON_UI_ELEM_TYPE_BOX         0x00000003 // Box. See sub types
 #define ASTRAL_CON_UI_ELEM_TYPE_ROOT        0x00000004 // Root element. USED ONLY FOR THE ROOT ELEMENT. DO NOT USE FOR OTHER ELEMENTS
 
+#define ASTRAL_DEF_TYPE                     ASTRAL_CON_UI_ELEM_TYPE_BOX
 #define ASTRAL_DEF_SUB_TYPE                 0x00000001 // Default sub type
 
 /*+++
@@ -514,7 +400,9 @@ If text object data is applied to a box, the text won't be displayed as the box 
 #define ASTRAL_CON_BOX_TYPE_VERTICAL        0x00000001 // Default. Vertical box
 #define ASTRAL_CON_BOX_TYPE_HORIZONTAL      0x00000002 // Horizontal box
 
-
+// Forward declarations
+typedef struct _ASTRAL_CON_UI_ELEM ASTRAL_CON_UI_ELEM;
+typedef struct _ASTRAL_CON_UI_ELEM_ARR ASTRAL_CON_UI_ELEM_ARR;
 
 
 /*+++
@@ -552,12 +440,12 @@ typedef struct _ASTRAL_CON_UI_ELEM {
     /*+++
     Position of the element. Defaults to 0,0.
     ---*/
-    ASTRAL_CON_COORD *POS;
+    ASTRAL_CON_COORD POS;
 
     /*+++
     Styling of the element. Defaults to default styling. See info of ASTRAL_CON_SET_PREDEF_STYLING.
     ---*/
-    ASTRAL_CON_STYLING *STYLING;
+    ASTRAL_CON_STYLING STYLING;
 
     // Array of child elements
     ASTRAL_CON_UI_ELEM_ARR *CHILDREN;
@@ -577,31 +465,12 @@ typedef struct _ASTRAL_CON_UI_ELEM {
     AS_U64 SZ;
 } ASTRAL_CON_UI_ELEM, *PASTRAL_CON_UI_ELEM;
 
-/// @brief Creates coordinates. Free with ASTRAL_CON_FREE_COORD
-/// @param X X position
-/// @param Y Y position
-/// @return Pointer to the created coordinates
-ASTRAL_EXPORT ASTRAL_CON_COORD *ASTRAL_CON_CREATE_COORD(AS_U64 X, AS_U64 Y);
-
-/// @brief Creates a new styling object. Free with ASTRAL_CON_FREE_STYLING
-/// @return Pointer to the created styling object
-ASTRAL_EXPORT ASTRAL_CON_STYLING *ASTRAL_CON_CREATE_STYLING();
 
 /// @brief Creates a new string object. Free with ASTRAL_CON_FREE_STR_OBJ
 /// @param STRING String data. This data will be copied
 /// @param STR_POS String position. See DEFINES above ASTRAL_CON_STR_OBJ
 /// @return Pointer to the created string object
 ASTRAL_EXPORT ASTRAL_CON_STR_OBJ *ASTRAL_CON_CREATE_STR_OBJ(AS_STRING *STRING, AS_U32 STR_POS);
-
-/// @brief Frees the coordinates
-/// @param COORD Coordinates to free
-/// @return U0
-ASTRAL_EXPORT AS_U0 ASTRAL_CON_FREE_COORD(ASTRAL_CON_COORD* COORD);
-
-/// @brief Frees the styling object
-/// @param STYLING Styling object to free
-/// @return U0
-ASTRAL_EXPORT AS_U0 ASTRAL_CON_FREE_STYLING(ASTRAL_CON_STYLING* STYLING);
 
 /// @brief Frees the string object
 /// @param STR_OBJ String object to free
@@ -629,8 +498,8 @@ ASTRAL_EXPORT ASTRAL_CON_UI_ELEM *ASTRAL_CON_UI_ELEM_INIT_EX(
     AS_U64 TYPE, 
     AS_U64 SUB_TYPE, 
     AS_U64 ID, 
-    ASTRAL_CON_COORD *POS, 
-    ASTRAL_CON_STYLING *STYLING, 
+    ASTRAL_CON_COORD POS, 
+    ASTRAL_CON_STYLING STYLING, 
     ASTRAL_CON_UI_ELEM_ARR *CHILDREN, 
     ASTRAL_CON_STR_OBJ *TEXT 
 );
@@ -734,6 +603,145 @@ Different categories can be combined using bitwise OR ('|').
 /// @param CATEGORY Category of the styling
 /// @return U0
 ASTRAL_EXPORT AS_U0 ASTRAL_CON_SET_PREDEF_STYLING(ASTRAL_CON_UI_ELEM* ELEMENT, AS_U32 CATEGORY);
+
+/// @brief Console structure
+typedef struct _ASTRAL_CONSOLE {
+    ASTRAL_CON_SIZE SIZE;       // Console size
+
+    AS_U8 *BUFFER;              // Buffer for the console
+    AS_U64 BUFFER_SIZE;         // Size of the buffer
+    
+    HANDLE HANDLEIN;            // Handle to the console input
+    HANDLE HANDLEOUT;           // Handle to the console output
+
+    AS_BOOLEAN RUNNING;         // Is the console running
+    
+    AS_U32 CON_MODE;            // Console mode
+    AS_U32 OG_MODE;             // Original console mode
+
+    AS_U32 OGOCHCP;             // Original output console code page
+    AS_U32 OGCHCP;              // Original console code page
+
+    ASTRAL_CON_UI_ELEM* ROOT;    // Root element
+} ASTRAL_CONSOLE, *PASTRAL_CONSOLE;
+
+/// @brief Mouse event structure
+typedef struct _ASTRAL_CON_MOUSE_EVENT {
+    AS_U64 BUTTON_STATE;        // Button state
+    AS_U64 BUTTONS;             // Buttons
+    AS_U64 X;                   // X position
+    AS_U64 Y;                   // Y position
+} ASTRAL_CON_MOUSE_EVENT, *PASTRAL_CON_MOUSE_EVENT;
+ 
+/// @brief Key event structure
+typedef struct _ASTRAL_CON_KEY_EVENT {
+    AS_U64 KEY_STATE;           // Key state
+    AS_U64 KEY_CODE;            // Key code
+    AS_U64 CHAR;                // Character
+} ASTRAL_CON_KEY_EVENT, *PASTRAL_CON_KEY_EVENT;
+
+/// @brief Resize event structure
+typedef struct _ASTRAL_CON_RESIZE_EVENT {
+    AS_U64 WIDTH;               // Width
+    AS_U64 HEIGHT;              // Height
+} ASTRAL_CON_RESIZE_EVENT, *PASTRAL_CON_RESIZE_EVENT;
+
+/// @brief Menu event structure
+typedef struct _ASTRAL_CON_MENU_EVENT {
+    AS_U64 MENU_ID;             // Menu ID
+} ASTRAL_CON_MENU_EVENT, *PASTRAL_CON_MENU_EVENT;
+
+/// @brief Focus event structure. Contains the focus state
+typedef struct _ASTRAL_CON_FOCUS_EVENT {
+    AS_U64 FOCUS_STATE;         // Focus state
+} ASTRAL_CON_FOCUS_EVENT, *PASTRAL_CON_FOCUS_EVENT;
+
+/*+++
+Console event types
+---*/
+#define ASTRAL_CON_EVENT_KEY         0x00000001 // Key event
+#define ASTRAL_CON_EVENT_MOUSE       0x00000002 // Mouse event
+#define ASTRAL_CON_EVENT_RESIZE      0x00000004 // Resize event
+#define ASTRAL_CON_EVENT_MENU        0x00000008 // Menu event
+#define ASTRAL_CON_EVENT_FOCUS       0x00000010 // Focus event
+#define ASTRAL_CON_EVENT_NO_EVENT    0x00000020 // No event
+
+/// @brief Console event structure
+typedef struct _ASTRAL_CON_EVENT {
+    AS_U64 EVENTS_READ;         // Events read
+    AS_U32 EVENT_TYPE;          // Event type
+    AS_U64 EVENT_SIZE;          // Size of the event
+    AS_U8* EVENT_DATA;          // Event data
+    ASTRAL_CON_MOUSE_EVENT  _MOUSE_EVENT;
+    ASTRAL_CON_KEY_EVENT    _KEY_EVENT;
+    ASTRAL_CON_RESIZE_EVENT _RESIZE_EVENT;
+    ASTRAL_CON_MENU_EVENT   _MENU_EVENT;
+    ASTRAL_CON_FOCUS_EVENT  _FOCUS_EVENT;
+} ASTRAL_CON_EVENT, *PASTRAL_CON_EVENT;
+
+#pragma ONLY_ON_WINDOWS_REMINDER("ASTRAL_CON_GET_EVENT")
+/// @brief Retrieves the next console event
+/// @param CONSOLE Console to get event from
+/// @param EVENT Event to store the event in
+ASTRAL_EXPORT AS_U0 ASTRAL_CON_GET_EVENT(ASTRAL_CONSOLE* CONSOLE, ASTRAL_CON_EVENT* EVENT);
+
+/// @brief Checks if the console is running. Use as the main loop condition
+/// @param CONSOLE Console to check
+/// @return BOOLEAN, is running
+ASTRAL_EXPORT AS_BOOLEAN ASTRAL_CON_IS_RUNNING(ASTRAL_CONSOLE* CONSOLE);
+
+
+#pragma ONLY_ON_WINDOWS_REMINDER("ASTRAL_CON_CREATE")
+/// @brief Creates a new console
+/// @return ASTRAL_CONSOLE
+ASTRAL_EXPORT ASTRAL_CONSOLE *ASTRAL_CON_CREATE();
+
+#pragma ONLY_ON_WINDOWS_REMINDER("ASTRAL_CON_DELETE")
+/// @brief Releases the console, restores original console mode
+/// @param CONSOLE Console to release
+/// @return BOOLEAN, success
+ASTRAL_EXPORT AS_BOOLEAN ASTRAL_CON_DELETE(ASTRAL_CONSOLE* CONSOLE);
+
+
+#pragma ONLY_ON_WINDOWS_REMINDER("ASTRAL_CON_CLS")
+/// @brief Clears the console screen
+/// @param CONSOLE Console to clear
+/// @return U16, error code (0 = success)
+ASTRAL_EXPORT AS_U16 ASTRAL_CON_CLS(ASTRAL_CONSOLE* CONSOLE);
+
+
+
+
+
+
+/*+++
+        |~~~~~~~~~~~~~~~~~~|
+        |  Console modes   |
+        |~~~~~~~~~~~~~~~~~~|
+
+Console modes. Apply with ASTRAL_CON_APPLY_MODES.
+
+Use bitwise OR ('|') to combine modes.
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Example:
+    ASTRAL_CON_MODE_IGNORE_CTRL_C | ASTRAL_CON_MODE_MOUSE_INPUT
+        --> Ignore CTRL+C and enable mouse input for the console
+---*/
+#define ASTRAL_CON_MODE_IGNORE_CTRL_C       0x00000001  // Ignore CTRL+C
+#define ASTRAL_CON_MODE_MOUSE_INPUT         0x00000002  // Mouse input, allows mouse events
+
+
+#pragma ONLY_ON_WINDOWS_REMINDER("ASTRAL_CON_APPLY_MODES")
+/// @brief Applies console modes
+/// @param CONSOLE Console to apply modes to
+/// @param MODES Modes to apply
+/// @return BOOLEAN, success
+ASTRAL_EXPORT AS_BOOLEAN ASTRAL_CON_APPLY_MODES(ASTRAL_CONSOLE* CONSOLE, AS_U64 MODES);
+
+
+
+
 
 
 
