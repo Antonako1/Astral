@@ -15,8 +15,7 @@ ASTRAL_CONSOLE *ASTRAL_CON_CREATE() {
     CONSOLE->HANDLEOUT = GetStdHandle(STD_OUTPUT_HANDLE);
     CONSOLE->HANDLEIN = GetStdHandle(STD_INPUT_HANDLE);
     
-    CONSOLE->SIZE.WIDTH = GetSystemMetrics(SM_CXSCREEN);
-    CONSOLE->SIZE.HEIGHT = GetSystemMetrics(SM_CYSCREEN);
+    ASTRAL_CON_GET_SIZE(CONSOLE);
     
     CONSOLE->RUNNING = TRUE;
     
@@ -44,14 +43,14 @@ ASTRAL_CONSOLE *ASTRAL_CON_CREATE() {
         ASTRAL_CON_UI_ELEM_TYPE_ROOT, // Type
         ASTRAL_DEF_SUB_TYPE,        // Sub type
         0,                          // ID. 0 for root
-        {0,0},                      // Position.
+        ASTRAL_CON_CREATE_COORD(0,0),   // Position.
         {
             ASTRAL_CON_CREATE_COLOUR_F_B_M(
                 RGBA(0,0,0,0), 
                 RGBA(0,0,0,0)
             ),              // Colour
-            {0,0},          // Margin
-            {0,0,0,0},      // Padding
+            ASTRAL_CON_CREATE_MARGIN(0,0,0,0),       // Margin
+            ASTRAL_CON_CREATE_PADDING(0,0,0,0),      // Padding
             0,              // Border radius
             0,              // Border width
             ASTRAL_CON_CREATE_COLOUR_F_B_M(
@@ -66,6 +65,18 @@ ASTRAL_CONSOLE *ASTRAL_CON_CREATE() {
     );
 
     return CONSOLE;
+}
+
+AS_BOOLEAN ASTRAL_CON_GET_SIZE(ASTRAL_CONSOLE* CONSOLE) {
+    // Get console size
+    CONSOLE_SCREEN_BUFFER_INFO csbi;
+    int columns, rows;
+    GetConsoleScreenBufferInfo(CONSOLE->HANDLEOUT, &csbi);
+    columns = csbi.srWindow.Right - csbi.srWindow.Left + 1;
+    rows = csbi.srWindow.Bottom - csbi.srWindow.Top + 1;
+
+    CONSOLE->SIZE = ASTRAL_CON_CREATE_SIZE(columns, rows);
+    return true;
 }
 
 AS_BOOLEAN ASTRAL_CON_APPLY_MODES(ASTRAL_CONSOLE* CONSOLE, AS_U64 MODES) {
