@@ -42,6 +42,7 @@ typedef signed int          AS_I32;
 typedef signed long long    AS_I64;
 typedef float               AS_F32;
 typedef double              AS_F64;
+typedef AS_U0               *AS_VPTR;
 #ifdef __cplusplus
 #   define NULLPTR              nullptr
 #   define AS_BOOLEAN           bool
