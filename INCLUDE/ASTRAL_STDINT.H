@@ -28,6 +28,8 @@ F64: double
 BOOLEAN: _Bool
 TRUE: 1
 FALSE: 0
+NULLPTR: NULL pointer
+PTR: Pointer size
 ---*/
 typedef void                AS_U0;
 typedef unsigned char       AS_U8;
@@ -106,4 +108,10 @@ Min-Max definitions
 #   define F32_MAX             3.402823466e+38F
 #   define F64_MAX             1.7976931348623158e+308
 #endif // ASTRAL_PLATFORM_WINDOWS
+
+#define _1_BYTE_FIT             0x10
+#define _2_BYTE_FIT             0x1000
+#define _4_BYTE_FIT             0x10000000
+#define _8_BYTE_FIT             0x1000000000000000
+
 #endif // ASTRAL_STDINT_H
