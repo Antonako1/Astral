@@ -187,12 +187,12 @@ ASTRAL_EXPORT AS_BOOLEAN ASTRAL_CON_APPLY_MODES(ASTRAL_CONSOLE* CONSOLE, AS_U64 
     Colour definitions are used to set the colour of the console text and background.
     Colours are defined using RGBA values.
 
-    Colours can be set using the SET_CON_COLOUR_F and SET_CON_COLOUR_B functions
+    Colours can be set using the ASTRAL_CON_SET_COLOUR_F and ASTRAL_CON_SET_COLOUR_B functions
         or by setting the values manually.
 
     Colours are stored in the ASTRAL_CON_COLOUR structure.
 
-    Use the RGBA macro to create a colour, use it with SET_CON_COLOUR_F_M and SET_CON_COLOUR_B_M functions.
+    Use the RGBA macro to create a colour, use it with ASTRAL_CON_SET_COLOUR_F_M and ASTRAL_CON_SET_COLOUR_B_M functions.
 
 
 ---*/
@@ -220,13 +220,13 @@ typedef struct _ASTRAL_CON_COLOUR {
 /// @param B Blue value
 /// @param A Alpha value
 /// @return U0
-ASTRAL_EXPORT AS_U0 SET_CON_COLOUR_F(ASTRAL_CON_COLOUR* COLOUR, AS_U8 R, AS_U8 G, AS_U8 B, AS_U8 A);
+ASTRAL_EXPORT AS_U0 ASTRAL_CON_SET_COLOUR_F(ASTRAL_CON_COLOUR* COLOUR, AS_U8 R, AS_U8 G, AS_U8 B, AS_U8 A);
 
 /// @brief Sets the console colour structure with the given RGBA value for the foreground
 /// @param COLOUR Pointer to the colour structure
 /// @param RGBA RGBA value, use the RGBA macro to create a colour
 /// @return U0
-ASTRAL_EXPORT AS_U0 SET_CON_COLOUR_F_M(ASTRAL_CON_COLOUR* COLOUR, AS_U32 RGBA);
+ASTRAL_EXPORT AS_U0 ASTRAL_CON_SET_COLOUR_F_M(ASTRAL_CON_COLOUR* COLOUR, AS_U32 RGBA);
 
 /// @brief Sets the console colour structure with the given RGB values for the background
 /// @param COLOUR Pointer to the colour structure
@@ -235,13 +235,13 @@ ASTRAL_EXPORT AS_U0 SET_CON_COLOUR_F_M(ASTRAL_CON_COLOUR* COLOUR, AS_U32 RGBA);
 /// @param B Blue value
 /// @param A Alpha value
 /// @return U0
-ASTRAL_EXPORT AS_U0 SET_CON_COLOUR_B(ASTRAL_CON_COLOUR* COLOUR, AS_U8 R, AS_U8 G, AS_U8 B, AS_U8 A);
+ASTRAL_EXPORT AS_U0 ASTRAL_CON_SET_COLOUR_B(ASTRAL_CON_COLOUR* COLOUR, AS_U8 R, AS_U8 G, AS_U8 B, AS_U8 A);
 
 /// @brief Sets the console colour structure with the given RGBA value for the background
 /// @param COLOUR Pointer to the colour structure
 /// @param RGBA RGBA value, use the RGBA macro to create a colour
 /// @return U0
-ASTRAL_EXPORT AS_U0 SET_CON_COLOUR_B_M(ASTRAL_CON_COLOUR* COLOUR, AS_U32 RGBA);
+ASTRAL_EXPORT AS_U0 ASTRAL_CON_SET_COLOUR_B_M(ASTRAL_CON_COLOUR* COLOUR, AS_U32 RGBA);
 
 
 
@@ -454,7 +454,7 @@ typedef struct _ASTRAL_CON_STYLING {
 /// @brief Basic string object
 typedef struct _ASTRAL_CON_STR_OBJ {
     AS_U32 STR_POS;             // String position. Use DEFINES. Defaults to center
-    AS_STRING STRING;           // String data
+    AS_STRING *STRING;           // String data
 } ASTRAL_CON_STR_OBJ, *PASTRAL_CON_STR_OBJ;
 
 
@@ -543,7 +543,7 @@ typedef struct _ASTRAL_CON_UI_ELEM {
     
     /*+++
     ID of the element. ( USE RANGE OF 1 - (U64_MAX-1) )
-    This field is required and must be unique. If the element won't have use for its ID, use U64_MAX.
+    This field is required and must be unique (U64_MAX can be used as much as needed). 
     0 is reserved for the root element, U64_MAX is reserved for elements without use for an ID.
     Recommended to use ENUMS for easier use.
     ---*/
@@ -552,30 +552,61 @@ typedef struct _ASTRAL_CON_UI_ELEM {
     /*+++
     Position of the element. Defaults to 0,0.
     ---*/
-    ASTRAL_CON_COORD POS;
+    ASTRAL_CON_COORD *POS;
 
     /*+++
     Styling of the element. Defaults to default styling. See info of ASTRAL_CON_SET_PREDEF_STYLING.
     ---*/
-    ASTRAL_CON_STYLING STYLING;
+    ASTRAL_CON_STYLING *STYLING;
 
     // Array of child elements
-    ASTRAL_CON_UI_ELEM_ARR CHILDREN;
+    ASTRAL_CON_UI_ELEM_ARR *CHILDREN;
 
     // Pointer to the parent element
-    ASTRAL_CON_UI_ELEM* PARENT;
+    ASTRAL_CON_UI_ELEM *PARENT;
 
     /*+++
     Text object. Can be empty. Defaults to empty.
     ---*/
-    ASTRAL_CON_STR_OBJ TEXT;
+    ASTRAL_CON_STR_OBJ *TEXT;
 
-    // State of the element. Use for buttons, etc.
+    // State of the element. Used for buttons, etc.
     AS_U64 STATE;
 
     // Size of this structure
     AS_U64 SZ;
 } ASTRAL_CON_UI_ELEM, *PASTRAL_CON_UI_ELEM;
+
+/// @brief Creates coordinates. Free with ASTRAL_CON_FREE_COORD
+/// @param X X position
+/// @param Y Y position
+/// @return Pointer to the created coordinates
+ASTRAL_EXPORT ASTRAL_CON_COORD *ASTRAL_CON_CREATE_COORD(AS_U64 X, AS_U64 Y);
+
+/// @brief Creates a new styling object. Free with ASTRAL_CON_FREE_STYLING
+/// @return Pointer to the created styling object
+ASTRAL_EXPORT ASTRAL_CON_STYLING *ASTRAL_CON_CREATE_STYLING();
+
+/// @brief Creates a new string object. Free with ASTRAL_CON_FREE_STR_OBJ
+/// @param STRING String data. This data will be copied
+/// @param STR_POS String position. See DEFINES above ASTRAL_CON_STR_OBJ
+/// @return Pointer to the created string object
+ASTRAL_EXPORT ASTRAL_CON_STR_OBJ *ASTRAL_CON_CREATE_STR_OBJ(AS_STRING *STRING, AS_U32 STR_POS);
+
+/// @brief Frees the coordinates
+/// @param COORD Coordinates to free
+/// @return U0
+ASTRAL_EXPORT AS_U0 ASTRAL_CON_FREE_COORD(ASTRAL_CON_COORD* COORD);
+
+/// @brief Frees the styling object
+/// @param STYLING Styling object to free
+/// @return U0
+ASTRAL_EXPORT AS_U0 ASTRAL_CON_FREE_STYLING(ASTRAL_CON_STYLING* STYLING);
+
+/// @brief Frees the string object
+/// @param STR_OBJ String object to free
+/// @return U0
+ASTRAL_EXPORT AS_U0 ASTRAL_CON_FREE_STR_OBJ(ASTRAL_CON_STR_OBJ* STR_OBJ);
 
 /// @brief Creates a new UI element
 /// @param PARENT Pointer to the parent element
@@ -589,24 +620,20 @@ ASTRAL_EXPORT ASTRAL_CON_UI_ELEM *ASTRAL_CON_UI_ELEM_INIT(ASTRAL_CON_UI_ELEM* PA
 /// @param ID ID of the element
 /// @param POS Position of the element
 /// @param STYLING Styling of the element
-/// @param CHILDREN Array of child elements
+/// @param CHILDREN Array of child elements. Use ASTRAL_CON_UI_ELEM_ARR_INIT to create an array
 /// @param PARENT Pointer to the parent element
 /// @param TEXT Text object
-/// @param STATE State of the element
-/// @param SZ Size of the element
 /// @return ASTRAL_CON_UI_ELEM*, pointer to the created element
 ASTRAL_EXPORT ASTRAL_CON_UI_ELEM *ASTRAL_CON_UI_ELEM_INIT_EX(
-                ASTRAL_CON_UI_ELEM *PARENT, 
-                AS_U64 TYPE, 
-                AS_U64 SUB_TYPE, 
-                AS_U64 ID, 
-                ASTRAL_CON_COORD POS, 
-                ASTRAL_CON_STYLING STYLING, 
-                ASTRAL_CON_UI_ELEM_ARR CHILDREN, 
-                ASTRAL_CON_STR_OBJ TEXT, 
-                AS_U64 STATE, 
-                AS_U64 SZ
-            );
+    ASTRAL_CON_UI_ELEM *PARENT, 
+    AS_U64 TYPE, 
+    AS_U64 SUB_TYPE, 
+    AS_U64 ID, 
+    ASTRAL_CON_COORD *POS, 
+    ASTRAL_CON_STYLING *STYLING, 
+    ASTRAL_CON_UI_ELEM_ARR *CHILDREN, 
+    ASTRAL_CON_STR_OBJ *TEXT 
+);
 
 /// @brief Frees the UI element
 /// @param ELEMENT Element to free
@@ -621,9 +648,9 @@ ASTRAL_EXPORT AS_U0 ASTRAL_CON_UI_ELEM_SET_TEXT(ASTRAL_CON_UI_ELEM* ELEMENT, AS_
 
 /*+++
     
-    |~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
-    |Children element manipulation functions and structures|
-    |~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
+    |~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
+    |Children element array manipulation functions and structures|
+    |~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
 
     Functions and structures for manipulating child elements of a UI element.
 
