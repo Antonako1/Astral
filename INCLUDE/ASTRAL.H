@@ -2,6 +2,8 @@
 ASTRAL.H
 Author: Antonako1
 Description: Astral header file
+                Contains all Astral headers
+                Include this file to include all Astral headers
 Licensed under the MIT License
 ---*/
 
