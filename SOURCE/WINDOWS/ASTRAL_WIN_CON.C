@@ -9,33 +9,62 @@ For ASTRAL_CON.H
 /*+++
 ASTRAL_CON.H
 ---*/
-ASTRAL_CONSOLE ASTRAL_CON_CREATE() {
-    ASTRAL_CONSOLE CONSOLE;
-    CONSOLE.HANDLEOUT = GetStdHandle(STD_OUTPUT_HANDLE);
-    CONSOLE.HANDLEIN = GetStdHandle(STD_INPUT_HANDLE);
+ASTRAL_CONSOLE *ASTRAL_CON_CREATE() {
+    ASTRAL_CONSOLE *CONSOLE = (ASTRAL_CONSOLE*)ASTRAL_M_ALLOC(sizeof(ASTRAL_CONSOLE));
+    if(CONSOLE == NULLPTR) return NULLPTR;
+    CONSOLE->HANDLEOUT = GetStdHandle(STD_OUTPUT_HANDLE);
+    CONSOLE->HANDLEIN = GetStdHandle(STD_INPUT_HANDLE);
     
-    CONSOLE.SZ.WIDTH = GetSystemMetrics(SM_CXSCREEN);
-    CONSOLE.SZ.HEIGHT = GetSystemMetrics(SM_CYSCREEN);
+    CONSOLE->SIZE.WIDTH = GetSystemMetrics(SM_CXSCREEN);
+    CONSOLE->SIZE.HEIGHT = GetSystemMetrics(SM_CYSCREEN);
     
-    CONSOLE.RUNNING = TRUE;
+    CONSOLE->RUNNING = TRUE;
     
-    CONSOLE.CON_MODE = 0;
-    CONSOLE.OGOCHCP = GetConsoleOutputCP();
-    CONSOLE.OGCHCP = GetConsoleCP();
+    CONSOLE->CON_MODE = 0;
+    CONSOLE->OGOCHCP = GetConsoleOutputCP();
+    CONSOLE->OGCHCP = GetConsoleCP();
     SetConsoleCP(CP_ACP);
     SetConsoleOutputCP(CP_ACP);
-    GetConsoleMode(CONSOLE.HANDLEIN, (LPDWORD)&CONSOLE.OG_MODE);
-    CONSOLE.CON_MODE |= ENABLE_WINDOW_INPUT;
-    SetConsoleMode(CONSOLE.HANDLEIN, (DWORD)CONSOLE.CON_MODE);
+    GetConsoleMode(CONSOLE->HANDLEIN, (LPDWORD)&CONSOLE->OG_MODE);
+    CONSOLE->CON_MODE |= ENABLE_WINDOW_INPUT;
+    SetConsoleMode(CONSOLE->HANDLEIN, (DWORD)CONSOLE->CON_MODE);
     
 
-    CONSOLE.BUFFER_SIZE = CONSOLE.SZ.WIDTH * CONSOLE.SZ.HEIGHT;
-    CONSOLE.BUFFER = (AS_U8*)ASTRAL_M_ALLOC(CONSOLE.BUFFER_SIZE);
-    if(CONSOLE.BUFFER == NULLPTR) {
-        CONSOLE.RUNNING = FALSE;
+    CONSOLE->BUFFER_SIZE = CONSOLE->SIZE.WIDTH * CONSOLE->SIZE.HEIGHT;
+    CONSOLE->BUFFER = (AS_U8*)ASTRAL_M_ALLOC(CONSOLE->BUFFER_SIZE);
+    if(CONSOLE->BUFFER == NULLPTR) {
+        CONSOLE->RUNNING = FALSE;
+        ASTRAL_M_FREE(CONSOLE);
+        CONSOLE = NULLPTR;
+        return NULLPTR;
     }
 
-    // TODO: Create root element
+    CONSOLE->ROOT = ASTRAL_CON_UI_ELEM_INIT_EX(
+        NULLPTR,                    // Parent. NULLPTR for root
+        ASTRAL_CON_UI_ELEM_TYPE_ROOT, // Type
+        ASTRAL_DEF_SUB_TYPE,        // Sub type
+        0,                          // ID. 0 for root
+        {0,0},                      // Position.
+        {
+            ASTRAL_CON_CREATE_COLOUR_F_B_M(
+                RGBA(0,0,0,0), 
+                RGBA(0,0,0,0)
+            ),              // Colour
+            {0,0},          // Margin
+            {0,0,0,0},      // Padding
+            0,              // Border radius
+            0,              // Border width
+            ASTRAL_CON_CREATE_COLOUR_F_B_M(
+                RGBA(0,0,0,0), 
+                RGBA(0,0,0,0)
+            ),                      // Border colour
+            BORDER_STYLE_NONE,      // Border style
+            {CONSOLE->SIZE.WIDTH, CONSOLE->SIZE.HEIGHT} // Size
+        },                          // Styling
+        NULLPTR,                    // Children. NULLPTR, no children yet
+        NULLPTR                     // Text. NULLPTR for root.
+    );
+
     return CONSOLE;
 }
 
@@ -65,6 +94,10 @@ AS_BOOLEAN ASTRAL_CON_DELETE(ASTRAL_CONSOLE* CONSOLE) {
     ASTRAL_M_FREE(CONSOLE->BUFFER);
     CONSOLE->BUFFER = NULLPTR;
     CONSOLE->BUFFER_SIZE = 0;
+    ASTRAL_CON_UI_ELEM_FREE(CONSOLE->ROOT);
+    CONSOLE->ROOT = NULLPTR;
+    ASTRAL_M_FREE(CONSOLE);
+    CONSOLE = NULLPTR;
     return TRUE;
 }
 
