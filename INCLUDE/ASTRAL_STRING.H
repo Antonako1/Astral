@@ -30,13 +30,10 @@ Licensed under the MIT License
 /// @brief Converts a C string to an AS_WCHAR string
 #define C_STR_TO_AS_WCHAR(STR) (AS_WCHAR*)STR
 
-/// @brief Converts an AS_CHAR string to a C string
 #define CSTR_TO_ACH(STR) C_STR_TO_AS_CHAR(STR)
-
-/// @brief Converts an AS_WCHAR string to a C string
 #define CSTR_TO_AWCH(STR) C_STR_TO_AS_WCHAR(STR)
 
-#define STR_TO_VP(STR) (AS_U0*)STR
+#define STR_TO_VP(STR) (AS_VPTR)STR
 
 typedef AS_U8 AS_CHAR;
 typedef WIN_LINUX_OTHER(AS_U16, AS_U32, AS_U32) AS_WCHAR;
