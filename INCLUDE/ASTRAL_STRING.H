@@ -24,21 +24,36 @@ Licensed under the MIT License
 #   define ASTRAL_HELP_MACRO_WLO(x, y, z) z
 #endif
 
+/// @brief Converts a C string to an AS_CHAR string
+#define C_STR_TO_AS_CHAR(STR) (AS_CHAR*)STR
+
+/// @brief Converts a C string to an AS_WCHAR string
+#define C_STR_TO_AS_WCHAR(STR) (AS_WCHAR*)STR
+
+/// @brief Converts an AS_CHAR string to a C string
+#define CSTR_TO_ACH(STR) C_STR_TO_AS_CHAR(STR)
+
+/// @brief Converts an AS_WCHAR string to a C string
+#define CSTR_TO_AWCH(STR) C_STR_TO_AS_WCHAR(STR)
+
+#define STR_TO_VP(STR) (AS_U0*)STR
+
 typedef AS_U8 AS_CHAR;
 typedef WIN_LINUX_OTHER(AS_U16, AS_U32, AS_U32) AS_WCHAR;
+
+#define STR_DEF_CAPACITY 255
 
 /// @brief String structure
 typedef struct _AS_STRING {
     AS_U64 LENGTH;          // Length of the string
-    AS_CHAR* DATA;            // Pointer to the string data
-} AS_STRING;
+    AS_CHAR* DATA;          // Pointer to the string data
+} AS_STRING, *PAS_STRING;
 
 
 typedef struct _AS_WSTRING {
     AS_U64 LENGTH;          // Length of the string
-    AS_U64 CAPACITY;        // Capacity of the string
     AS_WCHAR* DATA;       // Pointer to the string data
-} AS_WSTRING;
+} AS_WSTRING, *PAS_WSTRING;
 
 /*+++
 C STR FUNCTIONS
@@ -180,7 +195,12 @@ ASTRAL_EXPORT AS_STRING* ASTRAL_STR_CREATE(AS_U64 SIZE);
 /// @param DATA Text data
 /// @param DATA_SIZE Size of the data
 /// @return STRING, pointer to the string
-ASTRAL_EXPORT AS_STRING* ASTRAL_STR_CREATE_EX(AS_U64 SIZE, AS_CHAR* DATA, AS_U64 DATA_SIZE);
+ASTRAL_EXPORT AS_STRING* ASTRAL_STR_CREATE_EX(AS_U64 SIZE, AS_CHAR* DATA);
+
+/// @brief Duplicates a string
+/// @param STR String to duplicate
+/// @return STRING, pointer to the duplicated string
+ASTRAL_EXPORT AS_STRING* ASTRAL_STR_DUPLICATE(AS_STRING* STR);
 
 /// @brief Copies a string
 /// @param DEST Destination string
@@ -299,5 +319,10 @@ ASTRAL_EXPORT AS_BOOLEAN ASTRAL_WSTR_FREE(AS_WSTRING* STR);
 /// @param C Character to find
 /// @return U0*, pointer to the character
 ASTRAL_EXPORT AS_U0 *ASTRAL_WSTR_STRCHR(AS_WSTRING* STR, AS_WCHAR C);
+
+/// @brief Duplicates a string
+/// @param STR String to duplicate
+/// @return STRING, pointer to the duplicated string
+ASTRAL_EXPORT AS_WSTRING* ASTRAL_WSTR_DUPLICATE(AS_WSTRING* STR);
 
 #endif // ASTRAL_STRING_H
