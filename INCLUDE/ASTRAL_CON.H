@@ -18,7 +18,13 @@ Licensed under the MIT License
 #include <ASTRAL_STRING.H>
 
 #if ASTRAL_PLATFORM_WINDOWS
-#   include <Windows.h>
+// Handle definition to avoid including Windows.h
+typedef AS_U0 *HANDLE;
+#elif ASTRAL_PLATFORM_LINUX
+// On Linux, the console is accessed through the terminal
+typedef AS_I32 HANDLE;
+#else
+#   error "Unsupported platform for ASTRAL_CON.H's HANDLE definition"
 #endif
 
 /// @brief Console size structure
@@ -27,6 +33,12 @@ typedef struct _ASTRAL_CON_SIZE {
     AS_U64 HEIGHT;              // Height
 } ASTRAL_CON_SIZE, *PASTRAL_CON_SIZE;
 
+/// @brief Console coordinate structure
+typedef struct _ASTRAL_CON_COORD {
+    AS_U64 X;                   // X position
+    AS_U64 Y;                   // Y position
+} ASTRAL_CON_COORD, *PASTRAL_CON_COORD;
+
 /// @brief Console structure
 typedef struct _ASTRAL_CONSOLE {
     ASTRAL_CON_SIZE SZ;         // Console size
@@ -34,13 +46,9 @@ typedef struct _ASTRAL_CONSOLE {
     AS_U8 *BUFFER;              // Buffer for the console
     AS_U64 BUFFER_SIZE;         // Size of the buffer
     
-#if ASTRAL_PLATFORM_WINDOWS
     HANDLE HANDLEIN;            // Handle to the console input
     HANDLE HANDLEOUT;           // Handle to the console output
-#elif ASTRAL_PLATFORM_LINUX
-    AS_I32 HANDLEIN;            // File descriptor for the console input
-    AS_I32 HANDLEOUT;           // File descriptor for the console output
-#endif
+
     AS_BOOLEAN RUNNING;         // Is the console running
     
     AS_U32 CON_MODE;            // Console mode
@@ -49,21 +57,8 @@ typedef struct _ASTRAL_CONSOLE {
     AS_U32 OGOCHCP;             // Original output console code page
     AS_U32 OGCHCP;              // Original console code page
 
+    ASTRAL_CON_UI_ELEM ROOT;    // Root element
 } ASTRAL_CONSOLE, *PASTRAL_CONSOLE;
-
-
-/*+++
-Console modes. Apply with ASTRAL_CON_APPLY_MODES.
-Use bitwise OR ('|') to combine modes.
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Example:
-    ASTRAL_CON_MODE_IGNORE_CTRL_C | ASTRAL_CON_MODE_MOUSE_INPUT
-        --> Ignore CTRL+C and enable mouse input for the console
----*/
-#define ASTRAL_CON_MODE_IGNORE_CTRL_C       0x00000001  // Ignore CTRL+C
-#define ASTRAL_CON_MODE_MOUSE_INPUT         0x00000002  // Mouse input, allows mouse events
-
 
 /// @brief Mouse event structure
 typedef struct _ASTRAL_CON_MOUSE_EVENT {
@@ -125,36 +120,52 @@ typedef struct _ASTRAL_CON_EVENT {
 /// @param EVENT Event to store the event in
 ASTRAL_EXPORT AS_U0 ASTRAL_CON_GET_EVENT(ASTRAL_CONSOLE* CONSOLE, ASTRAL_CON_EVENT* EVENT);
 
-
-/// @brief Checks if the console is running
+/// @brief Checks if the console is running. Use as the main loop condition
 /// @param CONSOLE Console to check
 /// @return BOOLEAN, is running
 ASTRAL_EXPORT AS_BOOLEAN ASTRAL_CON_IS_RUNNING(ASTRAL_CONSOLE* CONSOLE);
+
 
 #pragma ONLY_ON_WINDOWS_REMINDER("ASTRAL_CON_CREATE")
 /// @brief Creates a new console
 /// @return ASTRAL_CONSOLE
 ASTRAL_EXPORT ASTRAL_CONSOLE ASTRAL_CON_CREATE();
 
-#pragma ONLY_ON_WINDOWS_REMINDER("ASTRAL_CON_CLEAR")
+#pragma ONLY_ON_WINDOWS_REMINDER("ASTRAL_CON_DELETE")
+/// @brief Releases the console, restores original console mode
+/// @param CONSOLE Console to release
+/// @return BOOLEAN, success
+ASTRAL_EXPORT AS_BOOLEAN ASTRAL_CON_DELETE(ASTRAL_CONSOLE* CONSOLE);
+
+
+#pragma ONLY_ON_WINDOWS_REMINDER("ASTRAL_CON_CLS")
 /// @brief Clears the console screen
 /// @param CONSOLE Console to clear
-/// @return U16, error code
-ASTRAL_EXPORT AS_U16 ASTRAL_CON_CLEAR(ASTRAL_CONSOLE* CONSOLE);
+/// @return U16, error code (0 = success)
+ASTRAL_EXPORT AS_U16 ASTRAL_CON_CLS(ASTRAL_CONSOLE* CONSOLE);
 
-#pragma ONLY_ON_WINDOWS_REMINDER("ASTRAL_CON_ADD_TO_BUFFER")
-/// @brief Adds a string to the console buffer
-/// @param CONSOLE Console to add to
-/// @param STRING String to add
-/// @return BOOLEAN, success
-ASTRAL_EXPORT AS_BOOLEAN ASTRAL_CON_ADD_TO_BUFFER(ASTRAL_CONSOLE* CONSOLE, AS_STRING STRING);
 
-// TODO: x2, implement
-#pragma ONLY_ON_WINDOWS_REMINDER("ASTRAL_CON_WRITE_BUFFER")
-ASTRAL_EXPORT AS_BOOLEAN ASTRAL_CON_WRITE_BUFFER(ASTRAL_CONSOLE* CONSOLE);
 
-#pragma ONLY_ON_WINDOWS_REMINDER("ASTRAL_CON_WRITE_STRING")
-ASTRAL_EXPORT AS_BOOLEAN ASTRAL_CON_WRITE_STRING(ASTRAL_CONSOLE* CONSOLE, AS_U8* STRING);
+
+
+
+/*+++
+        |~~~~~~~~~~~~~~~~~~|
+        |  Console modes   |
+        |~~~~~~~~~~~~~~~~~~|
+
+Console modes. Apply with ASTRAL_CON_APPLY_MODES.
+
+Use bitwise OR ('|') to combine modes.
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Example:
+    ASTRAL_CON_MODE_IGNORE_CTRL_C | ASTRAL_CON_MODE_MOUSE_INPUT
+        --> Ignore CTRL+C and enable mouse input for the console
+---*/
+#define ASTRAL_CON_MODE_IGNORE_CTRL_C       0x00000001  // Ignore CTRL+C
+#define ASTRAL_CON_MODE_MOUSE_INPUT         0x00000002  // Mouse input, allows mouse events
+
 
 #pragma ONLY_ON_WINDOWS_REMINDER("ASTRAL_CON_APPLY_MODES")
 /// @brief Applies console modes
@@ -163,27 +174,33 @@ ASTRAL_EXPORT AS_BOOLEAN ASTRAL_CON_WRITE_STRING(ASTRAL_CONSOLE* CONSOLE, AS_U8*
 /// @return BOOLEAN, success
 ASTRAL_EXPORT AS_BOOLEAN ASTRAL_CON_APPLY_MODES(ASTRAL_CONSOLE* CONSOLE, AS_U64 MODES);
 
-#pragma ONLY_ON_WINDOWS_REMINDER("ASTRAL_CON_DELETE")
-/// @brief Releases the console, restores original console mode
-/// @param CONSOLE Console to release
-/// @return BOOLEAN, success
-ASTRAL_EXPORT AS_BOOLEAN ASTRAL_CON_DELETE(ASTRAL_CONSOLE* CONSOLE);
-
-/// @brief Console coordinate structure
-typedef struct _ASTRAL_CON_COORD {
-    AS_U64 X;                   // X position
-    AS_U64 Y;                   // Y position
-} ASTRAL_CON_COORD, *PASTRAL_CON_COORD;
-
-#define ASTRAL_CON_STR_POS_CENTER   0x0001
-#define ASTRAL_CON_STR_POS_LEFT     0x0002
-#define ASTRAL_CON_STR_POS_RIGHT    0x0003
 
 
-// Use RGBA macro to create a colour
+
+
+
+/*+++
+        |~~~~~~~~~~~~~~~~~~|
+        |Colour definitions|
+        |~~~~~~~~~~~~~~~~~~|
+
+    Colour definitions are used to set the colour of the console text and background.
+    Colours are defined using RGBA values.
+
+    Colours can be set using the SET_CON_COLOUR_F and SET_CON_COLOUR_B functions
+        or by setting the values manually.
+
+    Colours are stored in the ASTRAL_CON_COLOUR structure.
+
+    Use the RGBA macro to create a colour, use it with SET_CON_COLOUR_F_M and SET_CON_COLOUR_B_M functions.
+
+
+---*/
+
+// 4 bytes for the colour
 #define RGBA(r, g, b, a) ((AS_U32)(((AS_U8)(r)|((AS_U16)((AS_U8)(g))<<8))|(((AS_U32)(AS_U8)(b))<<16)|(((AS_U32)(AS_U8)(a))<<24)))
 
-/// @brief Console colour structure
+/// @brief Console colour structure. Contains foreground and background colours
 typedef struct _ASTRAL_CON_COLOUR {
     AS_U8 R_F;                  // Red foreground
     AS_U8 G_F;                  // Green foreground
@@ -205,7 +222,7 @@ typedef struct _ASTRAL_CON_COLOUR {
 /// @return U0
 ASTRAL_EXPORT AS_U0 SET_CON_COLOUR_F(ASTRAL_CON_COLOUR* COLOUR, AS_U8 R, AS_U8 G, AS_U8 B, AS_U8 A);
 
-/// @brief Sets the console colour structure with the given RGB value for the foreground
+/// @brief Sets the console colour structure with the given RGBA value for the foreground
 /// @param COLOUR Pointer to the colour structure
 /// @param RGBA RGBA value, use the RGBA macro to create a colour
 /// @return U0
@@ -220,33 +237,478 @@ ASTRAL_EXPORT AS_U0 SET_CON_COLOUR_F_M(ASTRAL_CON_COLOUR* COLOUR, AS_U32 RGBA);
 /// @return U0
 ASTRAL_EXPORT AS_U0 SET_CON_COLOUR_B(ASTRAL_CON_COLOUR* COLOUR, AS_U8 R, AS_U8 G, AS_U8 B, AS_U8 A);
 
-/// @brief Sets the console colour structure with the given RGB value for the background
+/// @brief Sets the console colour structure with the given RGBA value for the background
 /// @param COLOUR Pointer to the colour structure
 /// @param RGBA RGBA value, use the RGBA macro to create a colour
 /// @return U0
 ASTRAL_EXPORT AS_U0 SET_CON_COLOUR_B_M(ASTRAL_CON_COLOUR* COLOUR, AS_U32 RGBA);
 
+
+
+
+
+
+/*+++
+
+        |~~~~~~~~~~~|
+        |UI ELEMENTS|
+        |~~~~~~~~~~~|
+
+    UI elements are used to create a user interface in the console.
+
+    UI is constructed using boxes that stack child elements vertically or horizontally.
+    Elements can be buttons, text, other boxes, etc.
+
+    Main types are buttons, text, boxes, etc.
+        Sub types are more specific types of the main types.
+
+---*/
+
+
+
+/*+++
+    About borders
+    ^^^^^^^^^^^^^
+
+    There are 8 predefined border styles. 4 for ASCII and 4 for UTF-8.
+
+    Borders are used to style boxes and other UI elements.
+
+    Borders are defined by 8 pieces. 4 corners and 4 sides.
+
+
+    CUSTOM BORDERS
+    ^^^^^^^^^^^^^^
+
+    Creating a custom border is done by creating an array of 
+        8 characters for ASCII or 8 wide characters for UTF-8.
+
+    The border is defined by the following pieces:
+        0: Top left corner      | Definition: BORDER_TOP_LEFT_PIECE
+        1: Top piece            | Definition: BORDER_TOP_PIECE
+        2: Top right corner     | Definition: BORDER_TOP_RIGHT_PIECE
+        3: Right piece          | Definition: BORDER_RIGHT_PIECE
+        4: Bottom right corner  | Definition: BORDER_BOTTOM_RIGHT_PIECE
+        5: Bottom piece         | Definition: BORDER_BOTTOM_PIECE
+        6: Bottom left corner   | Definition: BORDER_BOTTOM_LEFT_PIECE
+        7: Left piece           | Definition: BORDER_LEFT_PIECE
+    Order is clockwise starting from the top left corner.
+       
+    Set custom border styles using
+        ASTRAL_CON_SET_CUSTOM_ASCII_BORDER 
+        and 
+        ASTRAL_CON_SET_CUSTOM_UTF8_BORDER functions.
+
+    These functions overwrite the old custom border style,
+        so if you need to use multiple custom borders,
+        you must set the custom border every time you need to use it.
+
+    Current custom border styles can be retrieved using
+        ASTRAL_CON_GET_CUSTOM_ASCII_BORDER
+        and
+        ASTRAL_CON_GET_CUSTOM_UTF8_BORDER functions.
+
+    Example:
+        // This is the solid ASCII border
+        AS_U8 NEW_CUSTOM_ASCII_BORDER[PIECES_PER_BORDER] = {
+            '/', '-', '\\', 
+            '|',      '|', 
+            '\\', '-', '/'
+        };
+
+        // Sets the custom ASCII border. Old custom border will be overwritten
+        ASTRAL_CON_SET_CUSTOM_ASCII_BORDER(NEW_CUSTOM_ASCII_BORDER);
+---*/
+#define PIECES_PER_BORDER           0x8 // Pieces per border. 4 corners, 4 sides
+
+#define BORDER_TOP_LEFT_PIECE       0x0 // Top left corner piece
+#define BORDER_TOP_PIECE            0x1 // Top piece
+#define BORDER_TOP_RIGHT_PIECE      0x2 // Top right corner piece
+#define BORDER_RIGHT_PIECE          0x3 // Right piece
+#define BORDER_BOTTOM_RIGHT_PIECE   0x4 // Bottom right corner piece
+#define BORDER_BOTTOM_PIECE         0x5 // Bottom piece
+#define BORDER_BOTTOM_LEFT_PIECE    0x6 // Bottom left corner piece
+#define BORDER_LEFT_PIECE           0x7 // Left piece
+
+
+
+/*+++
+    ASCII styling for borders
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+---*/
+
+/*
+/----\
+|    |
+\----/
+*/
+#define BORDER_STYLE_ASCII_SOLID    0x00000001 // Solid border. -, |, etc.
+
+/*
+/- - \
+|    |
+\- - /
+*/
+#define BORDER_STYLE_ASCII_DASHED   0x00000002 // Dashed border. - - - - - - - - - -
+
+/*
+/....\
+:    :
+\..../
+*/
+#define BORDER_STYLE_ASCII_DOTTED   0x00000003 // Dotted border. .......................
+
+/*
+/====\
+|    |
+\====/
+*/
+#define BORDER_STYLE_ASCII_DOUBLE   0x00000004 // Double border. =, |, etc.
+
+/*+++
+    UTF-8 styling for borders
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+    Use with wide string configured CONSOLE struct!
+---*/
+
+/*
+┌────┐
+│    │
+└────┘
+*/
+#define BORDER_STYLE_UTF8_SOLID     0x00000005 // UTF-8 solid border. ─, │, ┌, ┐, └, ┘, etc.
+
+/*
+┌┄┄┄┐
+┆   ┆ 
+└┄┄┄┘
+*/
+#define BORDER_STYLE_UTF8_DASHED    0x00000006 // UTF-8 dashed border. ┄, ┆, etc.
+
+/*
+┌┉┉┉┐
+┊   ┊
+└┉┉┉┘
+*/
+#define BORDER_STYLE_UTF8_DOTTED    0x00000007 // UTF-8 dotted border. ┉, ┊, etc.
+
+/*
+╔════╗
+║    ║
+╚════╝
+*/
+#define BORDER_STYLE_UTF8_DOUBLE    0x00000008 // UTF-8 double border. ═, ║, etc.
+
+#define BORDER_STYLE_CUSTOM_ASCII   0x00000009 // Custom ASCII border
+#define BORDER_STYLE_CUSTOM_UTF8    0x0000000A // Custom UTF-8 border
+
+/// @brief Sets the predefined ASCII border style
+/// @param BORDER_STYLE Border style, see info above in the ABOUT BORDERS section
+ASTRAL_EXPORT AS_U0 ASTRAL_CON_SET_CUSTOM_ASCII_BORDER(AS_U8* BORDER_STYLE);
+
+/// @brief Sets the custom UTF8 border style
+/// @param BORDER_STYLE Border style array, see info above in the ABOUT BORDERS section
+ASTRAL_EXPORT AS_U0 ASTRAL_CON_SET_CUSTOM_UTF8_BORDER(AS_WCHAR* BORDER_STYLE);
+
+/// @brief Gets the custom ASCII border style
+/// @return U8*, pointer to the custom ASCII border style
+ASTRAL_EXPORT AS_U8 *ASTRAL_CON_GET_CUSTOM_ASCII_BORDER();
+
+/// @brief Gets the custom UTF-8 border style
+/// @return WCHAR*, pointer to the custom UTF-8 border style
+ASTRAL_EXPORT AS_WCHAR *ASTRAL_CON_GET_CUSTOM_UTF8_BORDER();
+
+
+
+
+typedef struct _ASTRAL_CON_MARGIN {
+    AS_U64 TOP;
+    AS_U64 BOTTOM;
+    AS_U64 LEFT;
+    AS_U64 RIGHT;
+} ASTRAL_CON_MARGIN, *PASTRAL_CON_MARGIN;
+
+typedef struct _ASTRAL_CON_PADDING {
+    AS_U64 TOP;
+    AS_U64 BOTTOM;
+    AS_U64 LEFT;
+    AS_U64 RIGHT;
+} ASTRAL_CON_PADDING, *PASTRAL_CON_PADDING;
+
+typedef struct _ASTRAL_CON_STYLING {
+    ASTRAL_CON_COLOUR   COLOUR;         // Colour
+    ASTRAL_CON_MARGIN   MARGIN;         // Margin
+    ASTRAL_CON_PADDING  PADDING;        // Padding
+    AS_U64              BORDER_RADIUS;  // Border radius
+    AS_U64              BORDER_WIDTH;   // Border width
+    ASTRAL_CON_COLOUR   BORDER_COLOUR;  // Border colour
+    AS_U64              BORDER_STYLE;   // Border style
+    ASTRAL_CON_SIZE     SIZE;           // Size
+} ASTRAL_CON_STYLING, *PASTRAL_CON_STYLING;
+
+#define ASTRAL_CON_STR_POS_CENTER   0x0001
+#define ASTRAL_CON_STR_POS_LEFT     0x0002
+#define ASTRAL_CON_STR_POS_RIGHT    0x0003
+
 /// @brief Basic string object
 typedef struct _ASTRAL_CON_STR_OBJ {
-    AS_STRING STRING;          // String data
-    ASTRAL_CON_COLOUR COLOUR;   // Colour
+    AS_U32 STR_POS;             // String position. Use DEFINES. Defaults to center
+    AS_STRING STRING;           // String data
 } ASTRAL_CON_STR_OBJ, *PASTRAL_CON_STR_OBJ;
 
-#define ASTRAL_CON_BUTTON_TYPE_TEXT  0x00000001
-#define ASTRAL_CON_BUTTON_TYPE_RADIO 0x00000002
-#define ASTRAL_CON_BUTTON_TYPE_CHECK 0x00000003
 
-/// @brief Console button structure
-typedef struct _ASTRAL_CON_BUTTON {
-    AS_U64 BUTTON_STATE;        // Button state
-    AS_U64 BUTTONS;             // Buttons
-    AS_U64 TYPE;                // Type
-    ASTRAL_CON_COORD POS;       // Position
-    ASTRAL_CON_SIZE SZ;         // Size
-    AS_U64 ID;                  // ID
-    ASTRAL_CON_COLOUR COLOUR;   // Colour
-    ASTRAL_CON_STR_OBJ STR_OBJ; // String object    
-} ASTRAL_CON_BUTTON, *PASTRAL_CON_BUTTON;
+
+
+
+// UI Element types
+#define ASTRAL_CON_UI_ELEM_TYPE_BUTTON      0x00000001 // See sub types
+#define ASTRAL_CON_UI_ELEM_TYPE_TEXT        0x00000002 // See sub types
+#define ASTRAL_CON_UI_ELEM_TYPE_BOX         0x00000003 // See sub types
+#define ASTRAL_CON_UI_ELEM_TYPE_ROOT        0x00000004 // Root element. USED ONLY FOR THE ROOT ELEMENT. DO NOT USE FOR OTHER ELEMENTS
+
+#define ASTRAL_DEF_SUB_TYPE                 0x00000001 // Default sub type
+
+/*+++
+Button sub types
+
+Button types are used to create buttons in the console.
+
+Radio buttons are used to select one option from a group of options.
+Check buttons are used to toggle a setting.
+Dropdown buttons are used to select one option from a dropdown list.
+
+Options can be added by adding child elements to the button.
+These child elements may NOT contain child elements themselves.
+
+State can be checked by looking the state of the button with its ID.
+---*/
+#define ASTRAL_CON_BUTTON_TYPE_TEXT         0x00000001 // Default. Text button
+#define ASTRAL_CON_BUTTON_TYPE_RADIO        0x00000002 // Radio button
+#define ASTRAL_CON_BUTTON_TYPE_CHECK        0x00000003 // Check button
+#define ASTRAL_CON_BUTTON_TYPE_DROPDOWN     0x00000004 // Dropdown button
+
+/*+++
+Text sub types
+
+Text types are used to display text in the console.
+
+TEXT: Default text type. Displays text.
+TITLE: Title text type. Displays title text, similar to a <H[1-6]> tag in HTML.
+---*/
+#define ASTRAL_CON_TEXT_TYPE_TEXT           0x00000001 // Default. Text
+#define ASTRAL_CON_TEXT_TYPE_TITLE          0x00000002 // Title
+
+/*+++
+Box sub types
+
+Box types are used to create boxes in the console.
+
+VERTICAL: Default. Vertical box. Stacks child elements vertically.
+HORIZONTAL: Horizontal box. Stacks child elements horizontally.
+
+Boxes can contain child elements.
+
+If text object data is applied to a box, the text won't be displayed as the box is not a text object.
+---*/
+#define ASTRAL_CON_BOX_TYPE_VERTICAL        0x00000001 // Default. Vertical box
+#define ASTRAL_CON_BOX_TYPE_HORIZONTAL      0x00000002 // Horizontal box
+
+
+
+
+/*+++
+Main UI element structure
+
+UI elements are used to create a user interface in the console.
+
+Different types of elements can be created by assigning the type and its sub type.
+
+Each element can have child elements, which can be used to create more complex UIs.
+
+Please read information about each field before using the structure.
+---*/
+typedef struct _ASTRAL_CON_UI_ELEM {
+    /*+++
+    Type of the element. Use DEFINES defined above.
+    Defaults to box.
+    ---*/
+    AS_U64 TYPE;
+
+    /*+++
+    Sub type of the element. Use DEFINES defined above.
+    Defaults to 0x00000001.
+    ---*/
+    AS_U64 SUB_TYPE;
+    
+    /*+++
+    ID of the element. ( USE RANGE OF 1 - (U64_MAX-1) )
+    This field is required and must be unique. If the element won't have use for its ID, use U64_MAX.
+    0 is reserved for the root element, U64_MAX is reserved for elements without use for an ID.
+    Recommended to use ENUMS for easier use.
+    ---*/
+    AS_U64 ID;
+
+    /*+++
+    Position of the element. Defaults to 0,0.
+    ---*/
+    ASTRAL_CON_COORD POS;
+
+    /*+++
+    Styling of the element. Defaults to default styling. See info of ASTRAL_CON_SET_PREDEF_STYLING.
+    ---*/
+    ASTRAL_CON_STYLING STYLING;
+
+    // Array of child elements
+    ASTRAL_CON_UI_ELEM_ARR CHILDREN;
+
+    // Pointer to the parent element
+    ASTRAL_CON_UI_ELEM* PARENT;
+
+    /*+++
+    Text object. Can be empty. Defaults to empty.
+    ---*/
+    ASTRAL_CON_STR_OBJ TEXT;
+
+    // State of the element. Use for buttons, etc.
+    AS_U64 STATE;
+
+    // Size of this structure
+    AS_U64 SZ;
+} ASTRAL_CON_UI_ELEM, *PASTRAL_CON_UI_ELEM;
+
+/// @brief Creates a new UI element
+/// @param PARENT Pointer to the parent element
+/// @return ASTRAL_CON_UI_ELEM, pointer to the created element
+ASTRAL_EXPORT ASTRAL_CON_UI_ELEM *ASTRAL_CON_UI_ELEM_INIT(ASTRAL_CON_UI_ELEM* PARENT);
+
+/// @brief Extended UI element creation function
+/// @param ELEMENT Pointer to the element to create
+/// @param TYPE Type of the element
+/// @param SUB_TYPE Sub type of the element
+/// @param ID ID of the element
+/// @param POS Position of the element
+/// @param STYLING Styling of the element
+/// @param CHILDREN Array of child elements
+/// @param PARENT Pointer to the parent element
+/// @param TEXT Text object
+/// @param STATE State of the element
+/// @param SZ Size of the element
+/// @return ASTRAL_CON_UI_ELEM*, pointer to the created element
+ASTRAL_EXPORT ASTRAL_CON_UI_ELEM *ASTRAL_CON_UI_ELEM_INIT_EX(
+                ASTRAL_CON_UI_ELEM *PARENT, 
+                AS_U64 TYPE, 
+                AS_U64 SUB_TYPE, 
+                AS_U64 ID, 
+                ASTRAL_CON_COORD POS, 
+                ASTRAL_CON_STYLING STYLING, 
+                ASTRAL_CON_UI_ELEM_ARR CHILDREN, 
+                ASTRAL_CON_STR_OBJ TEXT, 
+                AS_U64 STATE, 
+                AS_U64 SZ
+            );
+
+/// @brief Frees the UI element
+/// @param ELEMENT Element to free
+/// @return U0
+ASTRAL_EXPORT AS_U0 ASTRAL_CON_UI_ELEM_FREE(ASTRAL_CON_UI_ELEM* ELEMENT);
+
+/// @brief Sets the text of the UI element
+/// @param ELEMENT Element to set the text for
+/// @param TEXT Text to set
+/// @return U0
+ASTRAL_EXPORT AS_U0 ASTRAL_CON_UI_ELEM_SET_TEXT(ASTRAL_CON_UI_ELEM* ELEMENT, AS_STRING TEXT);
+
+/*+++
+    
+    |~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
+    |Children element manipulation functions and structures|
+    |~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
+
+    Functions and structures for manipulating child elements of a UI element.
+
+---*/
+/// @brief Array of UI elements
+typedef struct _ASTRAL_CON_UI_ELEM_ARR {
+    ASTRAL_CON_UI_ELEM* ELEMENTS;           // Array of elements
+    AS_U64 SIZE;                            // Size of the array
+} ASTRAL_CON_UI_ELEM_ARR, *PASTRAL_CON_UI_ELEM_ARR;
+
+/// @brief Creates a new UI element array
+/// @return ASTRAL_CON_UI_ELEM_ARR
+ASTRAL_EXPORT ASTRAL_CON_UI_ELEM_ARR* ASTRAL_CON_UI_ELEM_ARR_INIT();
+
+/// @brief Pushes a new element to the array
+/// @param ARR Array to push the element to
+/// @param ELEMENT Element to push
+/// @return Pointer to the pushed element
+ASTRAL_EXPORT ASTRAL_CON_UI_ELEM *ASTRAL_CON_UI_ELEM_ARR_PUSH(ASTRAL_CON_UI_ELEM_ARR* ARR, ASTRAL_CON_UI_ELEM* ELEMENT);
+
+/// @brief Pops the last element from the array
+/// @param ARR Array to pop the element from
+/// @return BOOLEAN, success
+ASTRAL_EXPORT AS_BOOLEAN ASTRAL_CON_UI_ELEM_ARR_POP(ASTRAL_CON_UI_ELEM_ARR* ARR);
+
+/// @brief Frees the UI element array
+/// @param ARR Array to free
+ASTRAL_EXPORT AS_U0 ASTRAL_CON_UI_ELEM_ARR_FREE(ASTRAL_CON_UI_ELEM_ARR* ARR);
+
+/// @brief Gets the child element at the given index
+/// @param ARR Array to get the element from
+/// @param INDEX Index of the element
+/// @return Pointer to the element. NULLPTR if not found
+ASTRAL_EXPORT ASTRAL_CON_UI_ELEM* ASTRAL_CON_UI_GET_CHILD_AT_INDEX(ASTRAL_CON_UI_ELEM_ARR* ARR, AS_U64 INDEX);
+
+/// @brief Searches for a child element with the given ID
+/// @param ELEMENT Element to search from
+/// @param ID ID of the child element
+/// @param CHILD Pointer to save the child element to
+/// @return Index of the child element. U64_MAX if not found 
+ASTRAL_EXPORT AS_U64 ASTRAL_CON_UI_GET_CHILD_OF_ID(ASTRAL_CON_UI_ELEM* ELEMENT, AS_U64 ID, ASTRAL_CON_UI_ELEM* CHILD);
+
+
+/// @brief Recursively searches for an element with the given ID
+/// @param ELEMENT Element to start the search from
+/// @param ID ID of the element
+/// @param MAX_DEPTH Maximum depth to search. 0 for no limit
+/// @return Pointer to the element. NULLPTR if not found
+ASTRAL_EXPORT ASTRAL_CON_UI_ELEM* ASTRAL_CON_UI_RECUR_SEARCH_ID(ASTRAL_CON_UI_ELEM* ELEMENT, AS_U64 ID, AS_U32 MAX_DEPTH);
+
+
+/*+++
+Default styling for UI elements
+
+Each element type has its own default styling.
+
+Categories:
+    Colour
+    Margin
+    Padding
+    Border radius
+    Border width
+    Border colour
+    Border style
+    Size
+
+Different categories can be combined using bitwise OR ('|').
+---*/
+
+#define ASTRAL_CON_STYLING_CATEGORY_COLOUR          0x00000001
+#define ASTRAL_CON_STYLING_CATEGORY_MARGIN          0x00000002
+#define ASTRAL_CON_STYLING_CATEGORY_PADDING         0x00000004
+#define ASTRAL_CON_STYLING_CATEGORY_BORDER_RADIUS   0x00000008
+#define ASTRAL_CON_STYLING_CATEGORY_BORDER_WIDTH    0x00000010
+#define ASTRAL_CON_STYLING_CATEGORY_BORDER_COLOUR   0x00000020
+#define ASTRAL_CON_STYLING_CATEGORY_BORDER_STYLE    0x00000040
+#define ASTRAL_CON_STYLING_CATEGORY_SIZE            0x00000080
+
+/// @brief Sets the predefined styling for a UI element
+/// @param ELEMENT Element to set the styling for
+/// @param CATEGORY Category of the styling
+/// @return U0
+ASTRAL_EXPORT AS_U0 ASTRAL_CON_SET_PREDEF_STYLING(ASTRAL_CON_UI_ELEM* ELEMENT, AS_U32 CATEGORY);
+
+
 
 
 
