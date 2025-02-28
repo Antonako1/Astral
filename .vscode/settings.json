@@ -14,6 +14,7 @@
         "ASTRAL_WIN_CON.C": "c",
         "ASTRAL_SHARED_MEM.C": "c",
         "ASTRAL_SHARED_STR.C": "c",
-        "ASTRAL_SHARED_CON.C": "c"
+        "ASTRAL_SHARED_CON.C": "c",
+        "astral.h": "c"
     }
 }
