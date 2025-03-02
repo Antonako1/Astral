@@ -26,19 +26,27 @@ Licensed under the MIT License
 
 /// @brief Converts a C string to an AS_CHAR string
 #define C_STR_TO_AS_CHAR(STR) (AS_CHAR*)STR
+#define CSTR_TO_ACH(STR) C_STR_TO_AS_CHAR(STR)
+#define CS_AS(STR) C_STR_TO_AS_CHAR(STR)
 
 /// @brief Converts a C string to an AS_WCHAR string
 #define C_STR_TO_AS_WCHAR(STR) (AS_WCHAR*)STR
-
-#define CSTR_TO_ACH(STR) C_STR_TO_AS_CHAR(STR)
 #define CSTR_TO_AWCH(STR) C_STR_TO_AS_WCHAR(STR)
+#define CWS_AS(STR) C_STR_TO_AS_WCHAR(STR)
 
 #define STR_TO_VP(STR) (AS_VPTR)STR
+#define TYPE_TO_VP(TYPE) (AS_VPTR)TYPE
 
 typedef AS_U8 AS_CHAR;
-typedef WIN_LINUX_OTHER(AS_U16, AS_U32, AS_U32) AS_WCHAR;
 
-#define STR_DEF_CAPACITY 255
+/// @brief Wide character. 16 bits on Windows, 32 bits on Linux, 32 bits on undefined platforms
+typedef WIN_LINUX_OTHER(AS_U16, AS_U32, AS_U32) AS_WCHAR;
+#define AS_WCHAR_SIZE WIN_LINUX_OTHER(sizeof(AS_U16), sizeof(AS_U32), sizeof(AS_U32))
+#define AS_WCHARMAX WIN_LINUX_OTHER(U16_MAX, U32_MAX, U32_MAX)
+#define AS_WCHARMIN WIN_LINUX_OTHER(U16_MIN, U32_MIN, U32_MIN)
+
+/// @brief String structure. Turns into a wide string on Windows,
+#define AS_WCH(STR) WIN_LINUX_OTHER(L##STR, L##STR, L##STR)
 
 /// @brief String structure
 typedef struct _AS_STRING {
@@ -184,17 +192,15 @@ ASTRAL STR FUNCTIONS
 /// @return U64, length of the string
 ASTRAL_EXPORT AS_U64 ASTRAL_STRLEN(AS_STRING* STR);
 
-/// @brief Creates a new string
-/// @param SIZE Size of the string
+/// @brief Creates a new string. Free with ASTRAL_STR_FREE
 /// @return STRING, pointer to the string
-ASTRAL_EXPORT AS_STRING* ASTRAL_STR_CREATE(AS_U64 SIZE);
+ASTRAL_EXPORT AS_STRING* ASTRAL_STR_CREATE();
 
-/// @brief Creates a new string with data
-/// @param SIZE Size of the string
+/// @brief Creates a new string with data. Free with ASTRAL_STR_FREE
 /// @param DATA Text data
-/// @param DATA_SIZE Size of the data
+/// @param MAX_SIZE Maximum size of the string. Use against buffer overflows 
 /// @return STRING, pointer to the string
-ASTRAL_EXPORT AS_STRING* ASTRAL_STR_CREATE_EX(AS_U64 SIZE, AS_CHAR* DATA);
+ASTRAL_EXPORT AS_STRING* ASTRAL_STR_CREATE_EX(AS_CHAR* DATA, AS_U64 MAX_SIZE);
 
 /// @brief Duplicates a string
 /// @param STR String to duplicate
@@ -260,17 +266,15 @@ WIDE ASTRAL STR FUNCTIONS
 /// @return U64, length of the string
 ASTRAL_EXPORT AS_U64 ASTRAL_WSTRLEN(AS_WSTRING* STR);
 
-/// @brief Creates a new string
-/// @param SIZE Size of the string
+/// @brief Creates a new string. Free with ASTRAL_WSTR_FREE
 /// @return STRING, pointer to the string
-ASTRAL_EXPORT AS_WSTRING* ASTRAL_WSTR_CREATE(AS_U64 SIZE);
+ASTRAL_EXPORT AS_WSTRING* ASTRAL_WSTR_CREATE();
 
-/// @brief Creates a new string with data
-/// @param SIZE Size of the string
+/// @brief Creates a new string with data. Free with ASTRAL_WSTR_FREE
 /// @param DATA Text data
-/// @param DATA_SIZE Size of the data
+/// @param MAX_SIZE Max size of data. Used against buffer overflows
 /// @return STRING, pointer to the string
-ASTRAL_EXPORT AS_WSTRING* ASTRAL_WSTR_CREATE_EX(AS_U64 SIZE, AS_WCHAR* DATA, AS_U64 DATA_SIZE);
+ASTRAL_EXPORT AS_WSTRING* ASTRAL_WSTR_CREATE_EX(AS_WCHAR* DATA, AS_U64 MAX_SIZE);
 
 /// @brief Copies a string
 /// @param DEST Destination string
@@ -325,5 +329,12 @@ ASTRAL_EXPORT AS_U0 *ASTRAL_WSTR_STRCHR(AS_WSTRING* STR, AS_WCHAR C, AS_U64 N);
 /// @param STR String to duplicate
 /// @return STRING, pointer to the duplicated string
 ASTRAL_EXPORT AS_WSTRING* ASTRAL_WSTR_DUPLICATE(AS_WSTRING* STR);
+
+/*+++
+Use for functions that require:
+    (STR, SIZE) or something similar
+---*/
+#define STR_MAX_COMBO(STR) CS_AS(STR), C_STRLEN(CS_AS(STR))
+#define WSTR_MAX_COMBO(STR) CWS_AS(STR), C_WSTRLEN(CWS_AS(STR))
 
 #endif // ASTRAL_STRING_H
