@@ -180,28 +180,245 @@ AS_STRING* ASTRAL_STR_DUPLICATE(AS_STRING* STR) {
     return STR_DUP;
 }
 
-AS_U0 *C_STRCHR(AS_CHAR* STR, AS_CHAR C);
-AS_U0 *C_STRCHR(AS_CHAR* STR, AS_CHAR C);
-AS_U0 *ASTRAL_STR_STRCHR(AS_STRING* STR, AS_CHAR C);
-AS_U0 *ASTRAL_WSTR_STRCHR(AS_WSTRING* STR, AS_WCHAR C);
+AS_U0 *C_STRCHR(AS_CHAR* STR, AS_CHAR C, AS_U64 N) {
+    AS_U64 I = 0;
+    AS_U64 J = 0;
+    while(STR[I] != '\0') {
+        if(STR[I] == C) {
+            if(J == N) {
+                return &STR[I];
+            }
+            J++;
+        }
+        I++;
+    }
+    return NULLPTR;
+}
+AS_U0 *C_STRCHR(AS_CHAR* STR, AS_CHAR C, AS_U64 N) {
+    AS_U64 I = 0;
+    AS_U64 J = 0;
+    while(STR[I] != '\0') {
+        if(STR[I] == C) {
+            if(J == N) {
+                return &STR[I];
+            }
+            J++;
+        }
+        I++;
+    }
+    return NULLPTR;
+}
+AS_U0 *ASTRAL_STR_STRCHR(AS_STRING* STR, AS_CHAR C, AS_U64 N) {
+    AS_U64 I = 0;
+    AS_U64 J = 0;
+    while(I < STR->LENGTH) {
+        if(STR->DATA[I] == C) {
+            if(J == N) {
+                return &STR->DATA[I];
+            }
+            J++;
+        }
+        I++;
+    }
+    return NULLPTR;
+}
 
-AS_WSTRING* ASTRAL_WSTR_DUPLICATE(AS_WSTRING* STR);
-AS_U64 C_WSTRLEN(AS_WCHAR* STR);
-AS_U64 C_WSTRLEN_S(AS_WCHAR* STR, AS_U64 SIZE);
-AS_U64 C_WSTRCMP(AS_WCHAR* STR1, AS_WCHAR* STR2);
-AS_U64 C_WSTRCMP_S(AS_WCHAR* STR1, AS_WCHAR* STR2, AS_U64 SIZE);
-AS_U64 C_WSTRCPY(AS_WCHAR* DEST, AS_WCHAR* SRC);
-AS_U64 C_WSTRCPY_S(AS_WCHAR* DEST, AS_WCHAR* SRC, AS_U64 SIZE);
-AS_U64 C_WSTRCAT(AS_WCHAR* DEST, AS_WCHAR* SRC);
-AS_U64 C_WSTRCAT_S(AS_WCHAR* DEST, AS_WCHAR* SRC, AS_U64 SIZE);
+AS_U0 *ASTRAL_WSTR_STRCHR(AS_WSTRING* STR, AS_WCHAR C, AS_U64 N) {
+    AS_U64 I = 0;
+    AS_U64 J = 0;
+    while(I < STR->LENGTH) {
+        if(STR->DATA[I] == C) {
+            if(J == N) {
+                return &STR->DATA[I];
+            }
+            J++;
+        }
+        I++;
+    }
+    return NULLPTR;
+}
 
-AS_U64 ASTRAL_WSTRLEN(AS_WSTRING* STR);
-AS_WSTRING* ASTRAL_WSTR_CREATE(AS_U64 SIZE);
-AS_WSTRING* ASTRAL_WSTR_CREATE_EX(AS_U64 SIZE, AS_WCHAR* DATA, AS_U64 DATA_SIZE);
-AS_U64 ASTRAL_WSTR_COPY(AS_WSTRING* DEST, AS_WSTRING* SRC);
-AS_U64 ASTRAL_WSTR_COPY_WCH(AS_WSTRING* DEST, AS_WCHAR* SRC, AS_U64 SIZE);
-AS_U64 ASTRAL_WSTR_APPEND(AS_WSTRING* DEST, AS_WSTRING* SRC);
-AS_U64 ASTRAL_WSTR_APPEND_WCH(AS_WSTRING* DEST, AS_WCHAR* SRC, AS_U64 SIZE);
-AS_BOOLEAN ASTRAL_WSTR_CMP(AS_WSTRING* STR1, AS_WSTRING* STR2);
-AS_BOOLEAN ASTRAL_WSTR_CMP_WCH(AS_WSTRING* STR1, AS_WCHAR* STR2, AS_U64 SIZE);
-AS_BOOLEAN ASTRAL_WSTR_FREE(AS_WSTRING* STR);
+AS_WSTRING* ASTRAL_WSTR_DUPLICATE(AS_WSTRING* STR) {
+    AS_WSTRING* STR_DUP = ASTRAL_WSTR_CREATE(STR->LENGTH);
+    ASTRAL_WSTR_COPY(STR_DUP, STR);
+    return STR_DUP;
+}
+AS_U64 C_WSTRLEN(AS_WCHAR* STR) {
+    AS_U64 LENGTH = 0;
+    while(STR[LENGTH] != '\0') {
+        LENGTH++;
+    }
+    return LENGTH;
+}
+AS_U64 C_WSTRLEN_S(AS_WCHAR* STR, AS_U64 SIZE) {
+    AS_U64 LENGTH = 0;
+    while(LENGTH < SIZE && STR[LENGTH] != '\0') {
+        LENGTH++;
+    }
+    return LENGTH;
+}
+AS_U64 C_WSTRCMP(AS_WCHAR* STR1, AS_WCHAR* STR2){
+    AS_U64 I = 0;
+    while(STR1[I] != '\0' && STR2[I] != '\0') {
+        if(STR1[I] != STR2[I]) {
+            return 0;
+        }
+        I++;
+    }
+    return 1;
+}
+AS_U64 C_WSTRCMP_S(AS_WCHAR* STR1, AS_WCHAR* STR2, AS_U64 SIZE){
+    AS_U64 I = 0;
+    while(I < SIZE && STR1[I] != '\0' && STR2[I] != '\0') {
+        if(STR1[I] != STR2[I]) {
+            return 0;
+        }
+        I++;
+    }
+    return 1;
+}
+AS_U64 C_WSTRCPY(AS_WCHAR* DEST, AS_WCHAR* SRC){
+    AS_U64 I = 0;
+    while(SRC[I] != '\0') {
+        DEST[I] = SRC[I];
+        I++;
+    }
+    DEST[I] = '\0';
+    return I;
+}
+AS_U64 C_WSTRCPY_S(AS_WCHAR* DEST, AS_WCHAR* SRC, AS_U64 SIZE){
+    AS_U64 I = 0;
+    while(I < SIZE && SRC[I] != '\0') {
+        DEST[I] = SRC[I];
+        I++;
+    }
+    DEST[I] = '\0';
+    return I;
+}
+AS_U64 C_WSTRCAT(AS_WCHAR* DEST, AS_WCHAR* SRC){
+    AS_U64 I = 0;
+    while(DEST[I] != '\0') {
+        I++;
+    }
+    AS_U64 J = 0;
+    while(SRC[J] != '\0') {
+        DEST[I] = SRC[J];
+        I++;
+        J++;
+    }
+    DEST[I] = '\0';
+    return I;
+}
+AS_U64 C_WSTRCAT_S(AS_WCHAR* DEST, AS_WCHAR* SRC, AS_U64 SIZE){
+    AS_U64 I = 0;
+    while(DEST[I] != '\0') {
+        I++;
+    }
+    AS_U64 J = 0;
+    while(J < SIZE && SRC[J] != '\0') {
+        DEST[I] = SRC[J];
+        I++;
+        J++;
+    }
+    DEST[I] = '\0';
+    return I;
+}
+
+AS_U64 ASTRAL_WSTRLEN(AS_WSTRING* STR){
+    return STR->LENGTH;
+}
+AS_U64 ASTRAL_WSTR_COPY(AS_WSTRING* DEST, AS_WSTRING* SRC){
+    if(DEST->DATA != NULLPTR) {
+        ASTRAL_M_FREE(DEST->DATA);
+    }
+    DEST->DATA = (AS_WCHAR*)ASTRAL_M_ALLOC(SRC->LENGTH);
+    DEST->LENGTH = SRC->LENGTH;
+    for(AS_U64 I = 0; I < SRC->LENGTH; I++) {
+        DEST->DATA[I] = SRC->DATA[I];
+    }
+    return DEST->LENGTH;
+}
+AS_U64 ASTRAL_WSTR_COPY_WCH(AS_WSTRING* DEST, AS_WCHAR* SRC, AS_U64 SIZE){
+    if(DEST->DATA != NULLPTR) {
+        ASTRAL_M_FREE(DEST->DATA);
+    }
+    DEST->DATA = (AS_WCHAR*)ASTRAL_M_ALLOC(SIZE);
+    DEST->LENGTH = SIZE;
+    for(AS_U64 I = 0; I < SIZE; I++) {
+        DEST->DATA[I] = SRC[I];
+    }
+    return DEST->LENGTH;
+}
+AS_U64 ASTRAL_WSTR_APPEND(AS_WSTRING* DEST, AS_WSTRING* SRC){
+    if(DEST->DATA != NULLPTR) {
+        ASTRAL_M_FREE(DEST->DATA);
+    }
+    DEST->DATA = (AS_WCHAR*)ASTRAL_M_ALLOC(SRC->LENGTH);
+    DEST->LENGTH = SRC->LENGTH;
+    for(AS_U64 I = 0; I < SRC->LENGTH; I++) {
+        DEST->DATA[I] = SRC->DATA[I];
+    }
+    return DEST->LENGTH;
+}
+AS_U64 ASTRAL_WSTR_APPEND_WCH(AS_WSTRING* DEST, AS_WCHAR* SRC, AS_U64 SIZE){
+    if(DEST->DATA != NULLPTR) {
+        ASTRAL_M_FREE(DEST->DATA);
+    }
+    DEST->DATA = (AS_WCHAR*)ASTRAL_M_ALLOC(SIZE);
+    DEST->LENGTH = SIZE;
+    for(AS_U64 I = 0; I < SIZE; I++) {
+        DEST->DATA[I] = SRC[I];
+    }
+    return DEST->LENGTH;
+}
+AS_BOOLEAN ASTRAL_WSTR_CMP(AS_WSTRING* STR1, AS_WSTRING* STR2){
+    for(AS_U64 I = 0; I < STR1->LENGTH; I++) {
+        if(STR1->DATA[I] != STR2->DATA[I]) {
+            return FALSE;
+        }
+    }
+    return TRUE;
+}
+AS_BOOLEAN ASTRAL_WSTR_CMP_WCH(AS_WSTRING* STR1, AS_WCHAR* STR2, AS_U64 SIZE){
+    for(AS_U64 I = 0; I < SIZE; I++) {
+        if(STR1->DATA[I] != STR2[I]) {
+            return FALSE;
+        }
+    }
+    return TRUE;
+}
+
+AS_U0 *C_WSTRCHR(AS_WCHAR* STR, AS_WCHAR C, AS_U64 N){
+    AS_U64 I = 0;
+    AS_U64 J = 0;
+    while(STR[I] != '\0') {
+        if(STR[I] == C) {
+            if(J == N) {
+                return &STR[I];
+            }
+            J++;
+        }
+        I++;
+    }
+    return NULLPTR;
+}
+
+AS_WSTRING* ASTRAL_WSTR_CREATE(AS_U64 SIZE) {
+    AS_WSTRING* STR = (AS_WSTRING*)ASTRAL_M_ALLOC(sizeof(AS_WSTRING));
+    STR->DATA = (AS_WCHAR*)ASTRAL_M_ALLOC(SIZE);
+    STR->LENGTH = SIZE;
+    return STR;
+}
+AS_WSTRING* ASTRAL_WSTR_CREATE_EX(AS_U64 SIZE, AS_WCHAR* DATA, AS_U64 DATA_SIZE) {
+    AS_WSTRING* STR = (AS_WSTRING*)ASTRAL_M_ALLOC(sizeof(AS_WSTRING));
+    STR->DATA = (AS_WCHAR*)ASTRAL_M_ALLOC(SIZE);
+    C_WSTRCPY_S(STR->DATA, DATA, SIZE);
+    STR->LENGTH = SIZE;
+    return STR;
+}
+AS_BOOLEAN ASTRAL_WSTR_FREE(AS_WSTRING* STR) {
+    ASTRAL_M_FREE(STR->DATA);
+    ASTRAL_M_FREE(STR);
+    STR = NULLPTR;
+    return TRUE;
+}

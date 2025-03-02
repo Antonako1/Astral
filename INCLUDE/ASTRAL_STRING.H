@@ -109,8 +109,9 @@ ASTRAL_EXPORT AS_U64 C_STRCAT_S(AS_CHAR* DEST, AS_CHAR* SRC, AS_U64 SIZE);
 /// @brief Finds a character in a string
 /// @param STR String to search
 /// @param C Character to find
+/// @param N Selects the Nth character. 0 for the first
 /// @return U0*, pointer to the character
-ASTRAL_EXPORT AS_U0 *C_STRCHR(AS_CHAR* STR, AS_CHAR C);
+ASTRAL_EXPORT AS_U0 *C_STRCHR(AS_CHAR* STR, AS_CHAR C, AS_U64 N);
 
 
 /*+++
@@ -170,8 +171,9 @@ AS_U64 C_WSTRCAT_S(AS_WCHAR* DEST, AS_WCHAR* SRC, AS_U64 SIZE);
 /// @brief Finds a character in a wide string
 /// @param STR String to search
 /// @param C Character to find
+/// @param N Selects the Nth character. 0 for the first
 /// @return U0*, pointer to the character
-AS_U0 *C_WSTRCHR(AS_WCHAR* STR, AS_WCHAR C);
+AS_U0 *C_WSTRCHR(AS_WCHAR* STR, AS_WCHAR C, AS_U64 N);
 
 /*+++
 ASTRAL STR FUNCTIONS
@@ -244,8 +246,9 @@ ASTRAL_EXPORT AS_BOOLEAN ASTRAL_STR_FREE(AS_STRING* STR);
 /// @brief Finds a character in a string
 /// @param STR String to search
 /// @param C Character to find
+/// @param N Selects the Nth character. 0 for the first
 /// @return U0*, pointer to the character
-ASTRAL_EXPORT AS_U0 *ASTRAL_STR_STRCHR(AS_STRING* STR, AS_CHAR C);
+ASTRAL_EXPORT AS_U0 *ASTRAL_STR_STRCHR(AS_STRING* STR, AS_CHAR C, AS_U64 N);
 
 
 /*+++
@@ -314,8 +317,9 @@ ASTRAL_EXPORT AS_BOOLEAN ASTRAL_WSTR_FREE(AS_WSTRING* STR);
 /// @brief Finds a character in a wide string
 /// @param STR String to search
 /// @param C Character to find
+/// @param N Selects the Nth character. 0 for the first
 /// @return U0*, pointer to the character
-ASTRAL_EXPORT AS_U0 *ASTRAL_WSTR_STRCHR(AS_WSTRING* STR, AS_WCHAR C);
+ASTRAL_EXPORT AS_U0 *ASTRAL_WSTR_STRCHR(AS_WSTRING* STR, AS_WCHAR C, AS_U64 N);
 
 /// @brief Duplicates a string
 /// @param STR String to duplicate
