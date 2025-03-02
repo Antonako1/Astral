@@ -344,26 +344,20 @@ typedef struct _ASTRAL_CON_STYLING {
     ASTRAL_CON_SIZE     SIZE;           // Size
 } ASTRAL_CON_STYLING, *PASTRAL_CON_STYLING;
 
-#define ASTRAL_CON_CREATE_STYLING(  \
-        COLOUR,                     \
-        MARGIN,                     \
-        PADDING,                    \
-        BORDER_RADIUS,              \
-        BORDER_WIDTH,               \
-        BORDER_COLOUR,              \
-        BORDER_STYLE,               \
-        SIZE                        \
-    )                               \
-    ASTRAL_CON_STYLING {          \
-        COLOUR,                     \
-        MARGIN,                     \
-        PADDING,                    \
-        BORDER_RADIUS,              \
-        BORDER_WIDTH,               \
-        BORDER_COLOUR,              \
-        BORDER_STYLE,               \
-        SIZE                        \
-    }
+#define ASTRAL_CON_NULL_COLOUR     ASTRAL_CON_CREATE_COLOUR_F_B_M(RGBA(0,0,0,0), RGBA(0,0,0,0))
+#define ASTRAL_CON_NULL_MARGIN     ASTRAL_CON_CREATE_MARGIN(0,0,0,0)
+#define ASTRAL_CON_NULL_PADDING    ASTRAL_CON_CREATE_PADDING(0,0,0,0)
+
+ASTRAL_EXPORT ASTRAL_CON_STYLING ASTRAL_CON_CREATE_STYLING (
+    ASTRAL_CON_COLOUR COLOUR,
+    ASTRAL_CON_MARGIN MARGIN,
+    ASTRAL_CON_PADDING PADDING,
+    AS_U64 BORDER_RADIUS,
+    AS_U64 BORDER_WIDTH,
+    ASTRAL_CON_COLOUR BORDER_COLOUR,
+    AS_U64 BORDER_STYLE,
+    ASTRAL_CON_SIZE SIZE
+);
 
 #define ASTRAL_CON_STR_POS_CENTER   0x0001
 #define ASTRAL_CON_STR_POS_LEFT     0x0002
@@ -374,8 +368,6 @@ typedef struct _ASTRAL_CON_STR_OBJ {
     AS_U32 STR_POS;             // String position. Use DEFINES. Defaults to center
     AS_STRING *STRING;           // String data
 } ASTRAL_CON_STR_OBJ, *PASTRAL_CON_STR_OBJ;
-
-
 
 
 
@@ -437,6 +429,7 @@ If text object data is applied to a box, the text won't be displayed as the box 
 typedef struct _ASTRAL_CON_UI_ELEM ASTRAL_CON_UI_ELEM;
 typedef struct _ASTRAL_CON_UI_ELEM_ARR ASTRAL_CON_UI_ELEM_ARR;
 
+#define AS_UNUSED_ID U64_MAX
 
 /*+++
 Main UI element structure
@@ -464,8 +457,8 @@ typedef struct _ASTRAL_CON_UI_ELEM {
     
     /*+++
     ID of the element. ( USE RANGE OF 1 - (U64_MAX-1) )
-    This field is required and must be unique (U64_MAX can be used as much as needed). 
-    0 is reserved for the root element, U64_MAX is reserved for elements without use for an ID.
+    This field is required and must be unique (AS_UNUSED_ID can be used as much as needed). 
+    0 is reserved for the root element, AS_UNUSED_ID is reserved for elements without use for an ID.
     Recommended to use ENUMS for easier use.
     ---*/
     AS_U64 ID;
@@ -512,7 +505,7 @@ ASTRAL_EXPORT AS_U0 ASTRAL_CON_FREE_STR_OBJ(ASTRAL_CON_STR_OBJ* STR_OBJ);
 /// @brief Creates a new UI element
 /// @param PARENT Pointer to the parent element
 /// @return ASTRAL_CON_UI_ELEM, pointer to the created element
-ASTRAL_EXPORT ASTRAL_CON_UI_ELEM *ASTRAL_CON_UI_ELEM_INIT(ASTRAL_CON_UI_ELEM* PARENT);
+ASTRAL_EXPORT_INTERNAL ASTRAL_CON_UI_ELEM *ASTRAL_CON_UI_ELEM_INIT(ASTRAL_CON_UI_ELEM* PARENT);
 
 /// @brief Extended UI element creation function
 /// @param ELEMENT Pointer to the element to create
@@ -525,7 +518,7 @@ ASTRAL_EXPORT ASTRAL_CON_UI_ELEM *ASTRAL_CON_UI_ELEM_INIT(ASTRAL_CON_UI_ELEM* PA
 /// @param PARENT Pointer to the parent element
 /// @param TEXT Text object
 /// @return ASTRAL_CON_UI_ELEM*, pointer to the created element
-ASTRAL_EXPORT ASTRAL_CON_UI_ELEM *ASTRAL_CON_UI_ELEM_INIT_EX(
+ASTRAL_EXPORT_INTERNAL ASTRAL_CON_UI_ELEM *ASTRAL_CON_UI_ELEM_INIT_EX(
     ASTRAL_CON_UI_ELEM *PARENT, 
     AS_U64 TYPE, 
     AS_U64 SUB_TYPE, 
@@ -539,13 +532,13 @@ ASTRAL_EXPORT ASTRAL_CON_UI_ELEM *ASTRAL_CON_UI_ELEM_INIT_EX(
 /// @brief Frees the UI element
 /// @param ELEMENT Element to free
 /// @return U0
-ASTRAL_EXPORT AS_U0 ASTRAL_CON_UI_ELEM_FREE(ASTRAL_CON_UI_ELEM* ELEMENT);
+ASTRAL_EXPORT_INTERNAL AS_U0 ASTRAL_CON_UI_ELEM_FREE(ASTRAL_CON_UI_ELEM* ELEMENT);
 
 /// @brief Sets the text of the UI element
 /// @param ELEMENT Element to set the text for
 /// @param TEXT Text to set
 /// @return U0
-ASTRAL_EXPORT AS_U0 ASTRAL_CON_UI_ELEM_SET_TEXT(ASTRAL_CON_UI_ELEM* ELEMENT, AS_STRING TEXT);
+ASTRAL_EXPORT AS_U0 ASTRAL_CON_UI_ELEM_SET_TEXT(ASTRAL_CON_UI_ELEM* ELEMENT, AS_STRING *TEXT);
 
 /*+++
     
@@ -564,35 +557,35 @@ typedef struct _ASTRAL_CON_UI_ELEM_ARR {
 
 /// @brief Creates a new UI element array
 /// @return ASTRAL_CON_UI_ELEM_ARR
-ASTRAL_EXPORT ASTRAL_CON_UI_ELEM_ARR* ASTRAL_CON_UI_ELEM_ARR_INIT();
+ASTRAL_EXPORT_INTERNAL ASTRAL_CON_UI_ELEM_ARR* ASTRAL_CON_UI_ELEM_ARR_INIT();
 
-/// @brief Pushes a new element to the array
+/// @brief Pushes a new element to the array. Only the pointer is pushed
 /// @param ARR Array to push the element to
 /// @param ELEMENT Element to push
 /// @return Pointer to the pushed element
-ASTRAL_EXPORT ASTRAL_CON_UI_ELEM *ASTRAL_CON_UI_ELEM_ARR_PUSH(ASTRAL_CON_UI_ELEM_ARR* ARR, ASTRAL_CON_UI_ELEM* ELEMENT);
+ASTRAL_EXPORT_INTERNAL ASTRAL_CON_UI_ELEM *ASTRAL_CON_UI_ELEM_ARR_PUSH(ASTRAL_CON_UI_ELEM_ARR* ARR, ASTRAL_CON_UI_ELEM* ELEMENT);
 
 /// @brief Pops the last element from the array
 /// @param ARR Array to pop the element from
 /// @return BOOLEAN, success
-ASTRAL_EXPORT AS_BOOLEAN ASTRAL_CON_UI_ELEM_ARR_POP(ASTRAL_CON_UI_ELEM_ARR* ARR);
+ASTRAL_EXPORT_INTERNAL AS_BOOLEAN ASTRAL_CON_UI_ELEM_ARR_POP(ASTRAL_CON_UI_ELEM_ARR* ARR);
 
 /// @brief Frees the UI element array
 /// @param ARR Array to free
-ASTRAL_EXPORT AS_U0 ASTRAL_CON_UI_ELEM_ARR_FREE(ASTRAL_CON_UI_ELEM_ARR* ARR);
+ASTRAL_EXPORT_INTERNAL AS_U0 ASTRAL_CON_UI_ELEM_ARR_FREE(ASTRAL_CON_UI_ELEM_ARR* ARR);
 
 /// @brief Gets the child element at the given index
 /// @param ARR Array to get the element from
 /// @param INDEX Index of the element
 /// @return Pointer to the element. NULLPTR if not found
-ASTRAL_EXPORT ASTRAL_CON_UI_ELEM* ASTRAL_CON_UI_GET_CHILD_AT_INDEX(ASTRAL_CON_UI_ELEM_ARR* ARR, AS_U64 INDEX);
+ASTRAL_EXPORT_INTERNAL ASTRAL_CON_UI_ELEM* ASTRAL_CON_UI_GET_CHILD_AT_INDEX(ASTRAL_CON_UI_ELEM_ARR* ARR, AS_U64 INDEX);
 
 /// @brief Searches for a child element with the given ID
 /// @param ELEMENT Element to search from
 /// @param ID ID of the child element
 /// @param CHILD Pointer to save the child element to
 /// @return Index of the child element. U64_MAX if not found 
-ASTRAL_EXPORT AS_U64 ASTRAL_CON_UI_GET_CHILD_OF_ID(ASTRAL_CON_UI_ELEM* ELEMENT, AS_U64 ID, ASTRAL_CON_UI_ELEM* CHILD);
+ASTRAL_EXPORT_INTERNAL AS_U64 ASTRAL_CON_UI_GET_CHILD_OF_ID(ASTRAL_CON_UI_ELEM* ELEMENT, AS_U64 ID, ASTRAL_CON_UI_ELEM* CHILD);
 
 
 /// @brief Recursively searches for an element with the given ID
@@ -600,7 +593,7 @@ ASTRAL_EXPORT AS_U64 ASTRAL_CON_UI_GET_CHILD_OF_ID(ASTRAL_CON_UI_ELEM* ELEMENT, 
 /// @param ID ID of the element
 /// @param MAX_DEPTH Maximum depth to search. 0 for no limit
 /// @return Pointer to the element. NULLPTR if not found
-ASTRAL_EXPORT ASTRAL_CON_UI_ELEM* ASTRAL_CON_UI_RECUR_SEARCH_ID(ASTRAL_CON_UI_ELEM* ELEMENT, AS_U64 ID, AS_U32 MAX_DEPTH);
+ASTRAL_EXPORT_INTERNAL ASTRAL_CON_UI_ELEM* ASTRAL_CON_UI_RECUR_SEARCH_ID(ASTRAL_CON_UI_ELEM* ELEMENT, AS_U64 ID, AS_U32 MAX_DEPTH);
 
 
 /*+++
@@ -726,7 +719,7 @@ ASTRAL_EXPORT AS_BOOLEAN ASTRAL_CON_IS_RUNNING(ASTRAL_CONSOLE* CONSOLE);
 /// @brief Gets the current size of the console, updating the CONSOLE struct
 /// @param CONSOLE Pointer to the console struct
 /// @return BOOLEAN, success
-AS_BOOLEAN ASTRAL_CON_GET_SIZE(ASTRAL_CONSOLE* CONSOLE);
+ASTRAL_EXPORT_INTERNAL AS_BOOLEAN ASTRAL_CON_GET_SIZE(ASTRAL_CONSOLE* CONSOLE);
 
 #pragma ONLY_ON_WINDOWS_REMINDER("ASTRAL_CON_CREATE")
 /// @brief Creates a new console
@@ -938,6 +931,57 @@ Codes follow the ASCII standard where possible.
 /// @param KEY_CODE Key code
 /// @return AS_U16, key state, see key states above
 ASTRAL_EXPORT AS_U16 ASTRAL_CON_GET_SPEC_KEY_STATE(AS_U64 KEY_CODE);
+
+
+/*+++
+        CREATING UI ELEMENT STRUCTURE TREE
+
+    The following macros are used to create a tree structure for the UI elements.
+
+    ASTRAL_CON_CREATE_ELEMENT: Creates a new UI element. Use with ASTRAL_CON macro
+    ASTRAL_CON: Master macro for the console
+
+    Example:
+        ASTRAL_CON(
+            CONSOLE,        // Console to use
+            ASTRAL_CON_CREATE_ELEMENT(
+
+            )
+        )
+---*/
+
+/*+++
+            |~~~~~~~~~~~~~|
+            |ASTRAL_CON_CE|
+            |~~~~~~~~~~~~~|
+    
+    ASTRAL_CON_CE is a macro used to create a new UI element.
+
+    Use this macro ONLY with ASTRAL_CON.
+
+    TYPE: Type of the element. Use DEFINES above.
+    SUB_TYPE: Sub type of the element. Use DEFINES above.
+    ID: ID of the element. Use ENUMS for easier use.
+    STYLING: Styling of the element. Use ASTRAL_CON_CREATE_STYLING.
+    TEXT: Text object. Use ASTRAL_CON_CREATE_STR_OBJ or NULLPTR.
+    ...: Child elements. Use ASTRAL_CON_CE for child elements. NULLPTR if there are no child elements.
+---*/
+#define ASTRAL_CON_CE(  \
+        TYPE,           \
+        SUB_TYPE,       \
+        ID,             \
+        STYLING,        \
+        TEXT,           \
+        ...             \
+    )                   
+
+///@brief Master macro for the console
+///@param CONSOLE Console to use
+///@param TREE_STRUCTURE Tree structure to use
+#define ASTRAL_CON(CONSOLE,         \
+                    TREE_STRUCTURE  \
+                )
+                
 
 
 #endif // ASTRAL_CON_H
