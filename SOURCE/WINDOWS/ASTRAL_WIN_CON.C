@@ -44,22 +44,13 @@ ASTRAL_CONSOLE *ASTRAL_CON_CREATE() {
         ASTRAL_DEF_SUB_TYPE,        // Sub type
         0,                          // ID. 0 for root
         ASTRAL_CON_CREATE_COORD(0,0),   // Position.
-        {
-            ASTRAL_CON_CREATE_COLOUR_F_B_M(
-                RGBA(0,0,0,0), 
-                RGBA(0,0,0,0)
-            ),              // Colour
-            ASTRAL_CON_CREATE_MARGIN(0,0,0,0),       // Margin
-            ASTRAL_CON_CREATE_PADDING(0,0,0,0),      // Padding
-            0,              // Border radius
-            0,              // Border width
-            ASTRAL_CON_CREATE_COLOUR_F_B_M(
-                RGBA(0,0,0,0), 
-                RGBA(0,0,0,0)
-            ),                      // Border colour
-            BORDER_STYLE_NONE,      // Border style
-            {CONSOLE->SIZE.WIDTH, CONSOLE->SIZE.HEIGHT} // Size
-        },                          // Styling
+        ASTRAL_CON_CREATE_STYLING ( // ASTRAL_CON_CREATE_STYLING
+            ASTRAL_CON_CREATE_COLOUR_F_B_M(RGBA(0,0,0,0),RGBA(0,0,0,0)),
+            ASTRAL_CON_CREATE_MARGIN(0,0,0,0),
+            ASTRAL_CON_CREATE_PADDING(0,0,0,0),
+            0, 0, ASTRAL_CON_CREATE_COLOUR_F_B_M(RGBA(0,0,0,0),RGBA(0,0,0,0)), BORDER_STYLE_DEFAULT,
+            ASTRAL_CON_CREATE_SIZE(CONSOLE->SIZE.WIDTH, CONSOLE->SIZE.HEIGHT)
+        ),
         NULLPTR,                    // Children. NULLPTR, no children yet
         NULLPTR                     // Text. NULLPTR for root.
     );
@@ -76,7 +67,7 @@ AS_BOOLEAN ASTRAL_CON_GET_SIZE(ASTRAL_CONSOLE* CONSOLE) {
     rows = csbi.srWindow.Bottom - csbi.srWindow.Top + 1;
 
     CONSOLE->SIZE = ASTRAL_CON_CREATE_SIZE(columns, rows);
-    return true;
+    return TRUE;
 }
 
 AS_BOOLEAN ASTRAL_CON_APPLY_MODES(ASTRAL_CONSOLE* CONSOLE, AS_U64 MODES) {
