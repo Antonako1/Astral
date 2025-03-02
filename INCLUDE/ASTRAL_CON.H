@@ -344,6 +344,27 @@ typedef struct _ASTRAL_CON_STYLING {
     ASTRAL_CON_SIZE     SIZE;           // Size
 } ASTRAL_CON_STYLING, *PASTRAL_CON_STYLING;
 
+#define ASTRAL_CON_CREATE_STYLING(  \
+        COLOUR,                     \
+        MARGIN,                     \
+        PADDING,                    \
+        BORDER_RADIUS,              \
+        BORDER_WIDTH,               \
+        BORDER_COLOUR,              \
+        BORDER_STYLE,               \
+        SIZE                        \
+    )                               \
+    ASTRAL_CON_STYLING {          \
+        COLOUR,                     \
+        MARGIN,                     \
+        PADDING,                    \
+        BORDER_RADIUS,              \
+        BORDER_WIDTH,               \
+        BORDER_COLOUR,              \
+        BORDER_STYLE,               \
+        SIZE                        \
+    }
+
 #define ASTRAL_CON_STR_POS_CENTER   0x0001
 #define ASTRAL_CON_STR_POS_LEFT     0x0002
 #define ASTRAL_CON_STR_POS_RIGHT    0x0003
@@ -476,12 +497,6 @@ typedef struct _ASTRAL_CON_UI_ELEM {
     // Size of this structure
     AS_U64 SZ;
 } ASTRAL_CON_UI_ELEM, *PASTRAL_CON_UI_ELEM;
-
-
-/// @brief Gets the current size of the console, updating the CONSOLE struct
-/// @param CONSOLE Pointer to the console struct
-/// @return BOOLEAN, success
-AS_BOOLEAN ASTRAL_CON_GET_SIZE(ASTRAL_CONSOLE* CONSOLE);
 
 /// @brief Creates a new string object. Free with ASTRAL_CON_FREE_STR_OBJ
 /// @param STRING String data. This data will be copied
@@ -707,6 +722,11 @@ ASTRAL_EXPORT AS_U0 ASTRAL_CON_GET_EVENT(ASTRAL_CONSOLE* CONSOLE, ASTRAL_CON_EVE
 /// @return BOOLEAN, is running
 ASTRAL_EXPORT AS_BOOLEAN ASTRAL_CON_IS_RUNNING(ASTRAL_CONSOLE* CONSOLE);
 
+#pragma ONLY_ON_WINDOWS_REMINDER("ASTRAL_CON_INIT")
+/// @brief Gets the current size of the console, updating the CONSOLE struct
+/// @param CONSOLE Pointer to the console struct
+/// @return BOOLEAN, success
+AS_BOOLEAN ASTRAL_CON_GET_SIZE(ASTRAL_CONSOLE* CONSOLE);
 
 #pragma ONLY_ON_WINDOWS_REMINDER("ASTRAL_CON_CREATE")
 /// @brief Creates a new console
