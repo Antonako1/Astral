@@ -16,6 +16,7 @@
         "ASTRAL_SHARED_STR.C": "c",
         "ASTRAL_SHARED_CON.C": "c",
         "astral.h": "c",
-        "stdlib.h": "c"
+        "stdlib.h": "c",
+        "ASTRAL.H": "C"
     }
 }
