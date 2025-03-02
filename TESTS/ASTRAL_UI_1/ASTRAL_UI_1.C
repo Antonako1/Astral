@@ -7,6 +7,10 @@ int main(void) {
     ASTRAL_CONSOLE *console = ASTRAL_CON_CREATE();
     ASTRAL_CON_APPLY_MODES(console, ASTRAL_CON_MODE_MOUSE_INPUT | ASTRAL_CON_MODE_IGNORE_CTRL_C);
 
+    printf("Console root id: %d\n", console->ROOT->ID);
+    printf("Console root height: %llu\n", console->ROOT->STYLING.SIZE.HEIGHT);
+    printf("Console root width: %llu\n", console->ROOT->STYLING.SIZE.WIDTH);
+    
     ASTRAL_CON_EVENT input;
     AS_U64 i = 0;
     while(ASTRAL_CON_IS_RUNNING(console)) {
