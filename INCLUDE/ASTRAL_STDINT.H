@@ -1,7 +1,7 @@
 /*+++
 ASTRAL_STDINT.H
 Author: Antonako1
-Description: Astral standard integer types
+Description: Astral standard integer types, limits and definitions
 Licensed under the MIT License
 ---*/
 
@@ -29,6 +29,7 @@ BOOLEAN: _Bool
 TRUE: 1
 FALSE: 0
 NULLPTR: NULL pointer
+VPTR: Void pointer
 PTR: Pointer size
 ---*/
 typedef void                AS_U0;
@@ -102,6 +103,7 @@ Min-Max definitions
 #   define U64_MAX             U32_MAX
 #   define I64_MAX             I32_MAX
 #   define I64_MIN             I32_MIN
+#   define F64_MAX             F32_MAX
 #endif
 
 #define _1_BYTE_FIT             0x10
