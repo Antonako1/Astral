@@ -1,3 +1,9 @@
+:: Usage: WIN_RUN.BAT <DIR_RUN> <arg2>
+:: This script is used to run tests on Windows
+:: Example 
+::      ./WIN_RUN ./ASTRAL_UI_1         -> Builds the project
+::      ./WIN_RUN ./ASTRAL_UI_1 r       -> Builds the project and runs the executable
+
 @echo off
 setlocal
 set "DIR_RUN=%1"
