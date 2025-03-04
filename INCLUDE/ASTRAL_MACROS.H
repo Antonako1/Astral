@@ -53,7 +53,7 @@ Currently unsupported platforms
 #endif
 
 // Architecture detection
-#if (defined(__x86_64__) || defined(_M_X64) || defined(_M_AMD64)) && sizeof(AS_PTR) == 8
+#if (defined(__x86_64__) || defined(_M_X64) || defined(_M_AMD64))
 #   define ASTRAL_ARCH_X64 1
 #   define ASTRAL_ARCH_X86_64 1
 #   define ASTRAL_64_BIT 1
