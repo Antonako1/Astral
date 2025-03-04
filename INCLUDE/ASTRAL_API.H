@@ -22,9 +22,13 @@ Licensed under the MIT License
 #   define ASTRAL_IMPORT
 #endif
 
-// Internal functions, not to be used outside of the library.
-#define ASTRAL_EXPORT_INTERNAL ASTRAL_EXPORT
-#define ASTRAL_IMPORT_INTERNAL ASTRAL_IMPORT
-
+// For internal functions, not to be used outside of the library.
+#if defined(ASTRAL_DEBUG_ACTIVE)
+#   define ASTRAL_EXPORT_INTERNAL ASTRAL_EXPORT
+#   define ASTRAL_IMPORT_INTERNAL ASTRAL_IMPORT
+#else
+#   define ASTRAL_EXPORT_INTERNAL
+#   define ASTRAL_IMPORT_INTERNAL
+#endif
 
 #endif // ASTRAL_API_H
