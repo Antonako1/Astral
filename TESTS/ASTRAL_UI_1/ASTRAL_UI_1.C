@@ -58,5 +58,6 @@ int main(void) {
 
 CLEANUP:
     ASTRAL_CON_DELETE(console);
+    console = NULLPTR; 
     return 0;
 }
