@@ -48,6 +48,10 @@ typedef WIN_LINUX_OTHER(AS_U16, AS_U32, AS_U32) AS_WCHAR;
 /// @brief String structure. Turns into a wide string on Windows,
 #define AS_WCH(STR) WIN_LINUX_OTHER(L##STR, L##STR, L##STR)
 
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
+
 /// @brief String structure
 typedef struct _AS_STRING {
     AS_U64 LENGTH;          // Length of the string
@@ -336,5 +340,9 @@ Use for functions that require:
 ---*/
 #define STR_MAX_COMBO(STR) CS_AS(STR), C_STRLEN(CS_AS(STR))
 #define WSTR_MAX_COMBO(STR) CWS_AS(STR), C_WSTRLEN(CWS_AS(STR))
+
+#ifdef __cplusplus
+}
+#endif // __cplusplus
 
 #endif // ASTRAL_STRING_H

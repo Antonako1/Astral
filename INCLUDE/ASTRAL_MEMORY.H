@@ -11,6 +11,10 @@ Licensed under the MIT License
 #include <ASTRAL_STDINT.H>
 #include <ASTRAL_API.H>
 
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
+
 #pragma ONLY_ON_WINDOWS_REMINDER("ASTRAL_M_ALLOC")
 /// @brief Allocates a memory block
 /// @param SIZE Size of the memory block
@@ -44,5 +48,8 @@ ASTRAL_EXPORT AS_U0 *ASTRAL_M_COPY(AS_U0 *DEST, AS_U0 *SRC, AS_U64 NUM);
 /// @return AS_U0*, pointer to the memory block
 ASTRAL_EXPORT AS_U0 *ASTRAL_M_SET(AS_U0 *PTR, AS_U8 VALUE, AS_U64 NUM);
 
+#ifdef __cplusplus
+}
+#endif // __cplusplus
 
 #endif // ASTRAL_MEMORY_H

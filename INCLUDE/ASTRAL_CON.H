@@ -2,8 +2,8 @@
 ASTRAL_CON.H
 Author: Antonako1
 Description: Astral console API header file
-             Contains console functions, structures and definitions
-             Header file for all console manipulation
+                Header file for all console manipulation
+                Contains console functions, structures and definitions
 Licensed under the MIT License
 ---*/
 
@@ -26,6 +26,10 @@ typedef AS_I32 HANDLE;
 #else
 #   error "Unsupported platform for ASTRAL_CON.H's HANDLE definition"
 #endif
+
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
 
 /// @brief Console coordinate structure
 typedef struct _ASTRAL_CON_COORD {
@@ -982,6 +986,8 @@ ASTRAL_EXPORT AS_U16 ASTRAL_CON_GET_SPEC_KEY_STATE(AS_U64 KEY_CODE);
                     TREE_STRUCTURE  \
                 )
                 
-
+#ifdef __cplusplus
+}
+#endif // __cplusplus
 
 #endif // ASTRAL_CON_H
