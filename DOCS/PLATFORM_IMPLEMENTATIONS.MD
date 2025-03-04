@@ -3,7 +3,7 @@ List of functions that need to be developed as cross-platform
  - ASTRAL_CON.H
     - ASTRAL_CON_CREATE
     - ASTRAL_CON_APPLY_MODES
-    - ASTRAL_CON_END_CONSOLE
+    - ASTRAL_CON_DELETE
     - ASTRAL_CON_GET_EVENT
     - ASTRAL_CON_CLEAR
     - ASTRAL_CON_GET_SPEC_KEY_STATE
