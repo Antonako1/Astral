@@ -26,3 +26,7 @@ AS_U0 *ASTRAL_M_SET(AS_U0 *PTR, AS_U8 VALUE, AS_U64 NUM) {
     }
     return PTR;
 }
+
+AS_U0 *ASTRAL_M_ZERO(AS_U0 *PTR, AS_U64 NUM){
+    return ASTRAL_M_SET(PTR, 0, NUM);
+}

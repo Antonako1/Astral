@@ -48,6 +48,12 @@ ASTRAL_EXPORT AS_U0 *ASTRAL_M_COPY(AS_U0 *DEST, AS_U0 *SRC, AS_U64 NUM);
 /// @return AS_U0*, pointer to the memory block
 ASTRAL_EXPORT AS_U0 *ASTRAL_M_SET(AS_U0 *PTR, AS_U8 VALUE, AS_U64 NUM);
 
+/// @brief Sets memory to zero. Does the same as ASTRAL_M_SET(PTR, 0, NUM)
+/// @param PTR Pointer to the memory block
+/// @param NUM Number of bytes to set from start of the block.
+/// @return AS_U0*, pointer to the memory block
+ASTRAL_EXPORT AS_U0 *ASTRAL_M_ZERO(AS_U0 *PTR, AS_U64 NUM);
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus

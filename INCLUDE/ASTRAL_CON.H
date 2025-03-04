@@ -633,13 +633,51 @@ Different categories can be combined using bitwise OR ('|').
 /// @return U0
 ASTRAL_EXPORT AS_U0 ASTRAL_CON_SET_PREDEF_STYLING(ASTRAL_CON_UI_ELEM* ELEMENT, AS_U32 CATEGORY);
 
+/// @brief Console buffer
+typedef struct _ASTRAL_CON_BUFFER {
+    AS_U8 *DATA;              // Buffer
+    AS_U64 SIZE;                // Size of the buffer
+} ASTRAL_CON_BUFFER, *PASTRAL_CON_BUFFER;
+
+/// @brief Initializes the console buffer. Free with ASTRAL_CON_BUFFER_DEL
+/// @param BUFFER Buffer to initialize
+/// @param SIZE Size of the buffer
+/// @return U0
+ASTRAL_EXPORT_INTERNAL AS_U0 ASTRAL_CON_BUFFER_INIT(ASTRAL_CON_BUFFER* BUFFER, AS_U64 SIZE);
+
+/// @brief Frees the console buffer
+/// @param BUFFER Buffer to free
+/// @return U0
+ASTRAL_EXPORT_INTERNAL AS_U0 ASTRAL_CON_BUFFER_DEL(ASTRAL_CON_BUFFER* BUFFER);
+
+/// @brief Sets the buffer size, re-allocating the buffer with the new SIZE
+/// @param BUFFER Buffer to set the size for
+/// @param SIZE New size
+/// @return U0*, pointer to new buffer data
+ASTRAL_EXPORT_INTERNAL AS_U0 *ASTRAL_CON_SET_BUFFER_SZ(ASTRAL_CON_BUFFER* BUFFER, AS_U64 SIZE);
+
+/// @brief Clears buffer, setting memory to 0
+/// @param BUFFER Buffer to clear
+/// @return U0
+ASTRAL_EXPORT_INTERNAL AS_U0 ASTRAL_CON_BUFFER_CLEAR(ASTRAL_CON_BUFFER* BUFFER);
+
+/// @brief Copies the memory of SRC buffer to DST buffer
+/// @param DST Destination buffer
+/// @param SRC Source buffer
+/// @return U0
+ASTRAL_EXPORT_INTERNAL AS_U0 ASTRAL_CON_BUFFER_COPY(ASTRAL_CON_BUFFER* DST, ASTRAL_CON_BUFFER* SRC);
+
+/// @brief Copies the memory of SRC buffer to a new buffer
+/// @param SRC Source buffer
+/// @return ASTRAL_CON_BUFFER*, pointer to the new buffer
+ASTRAL_EXPORT_INTERNAL ASTRAL_CON_BUFFER *ASTRAL_CON_BUFFER_COPY2(ASTRAL_CON_BUFFER* SRC);
+
 /// @brief Console structure
 typedef struct _ASTRAL_CONSOLE {
     ASTRAL_CON_SIZE SIZE;       // Console size
 
-    AS_U8 *BUFFER;              // Buffer for the console
-    AS_U64 BUFFER_SIZE;         // Size of the buffer
-    
+    ASTRAL_CON_BUFFER BUFFER;   // Console buffer
+
     HANDLE HANDLEIN;            // Handle to the console input
     HANDLE HANDLEOUT;           // Handle to the console output
 
