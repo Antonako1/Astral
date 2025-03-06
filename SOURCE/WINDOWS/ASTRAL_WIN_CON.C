@@ -12,6 +12,43 @@ ASTRAL_CON.H
 ASTRAL_CONSOLE *ASTRAL_CON_CREATE() {
     ASTRAL_CONSOLE *CONSOLE = (ASTRAL_CONSOLE*)ASTRAL_M_ALLOC(sizeof(ASTRAL_CONSOLE));
     if(CONSOLE == NULLPTR) return NULLPTR;
+
+    STARTUPINFO si;
+    PROCESS_INFORMATION pi;
+
+    ASTRAL_M_ZERO( &si, sizeof(si) );
+    si.cb = sizeof(si);
+    ASTRAL_M_ZERO( &pi, sizeof(pi) );
+
+    // Start the child process. 
+    if( !CreateProcess( NULL,   // No module name (use command line)
+        TEXT("C:\\Windows\\System32\\cmd.exe"), // Command line
+        NULL,           // Process handle not inheritable
+        NULL,           // Thread handle not inheritable
+        FALSE,          // Set handle inheritance to FALSE
+        0,              // No creation flags
+        NULL,           // Use parent's environment block
+        NULL,           // Use parent's starting directory 
+        &si,            // Pointer to STARTUPINFO structure
+        &pi )           // Pointer to PROCESS_INFORMATION structure
+    ) 
+    {
+        MessageBox(NULL, TEXT("Failed to create console process"), TEXT("ASTRAL"), MB_ICONERROR);
+        ASTRAL_M_FREE(CONSOLE);
+        CONSOLE = NULLPTR;
+        return NULLPTR;
+    }
+
+    WaitForSingleObject( pi.hProcess, INFINITE );
+
+    CONSOLE->RUN_INFO.PROCESS_HANDLE = pi.hProcess;
+    CONSOLE->RUN_INFO.THREAD_HANDLE = pi.hThread;
+    CONSOLE->RUN_INFO.PROCESS_ID = pi.dwProcessId;
+    CONSOLE->RUN_INFO.THREAD_ID = pi.dwThreadId;
+    // Close process and thread handles. 
+    // CloseHandle( pi.hProcess );
+    // CloseHandle( pi.hThread );
+
     CONSOLE->HANDLEOUT = GetStdHandle(STD_OUTPUT_HANDLE);
     CONSOLE->HANDLEIN = GetStdHandle(STD_INPUT_HANDLE);
     

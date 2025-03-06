@@ -77,75 +77,42 @@ ASTRAL_EXPORT ASTRAL_CON_SIZE ASTRAL_CON_CREATE_SIZE(AS_U64 WIDTH, AS_U64 HEIGHT
         |~~~~~~~~~~~~~~~~~~|
 
     Colour definitions are used to set the colour of the console text and background.
-    Colours are defined using RGBA values.
-
-    Colours can be set using the ASTRAL_CON_SET_COLOUR_F and ASTRAL_CON_SET_COLOUR_B functions
-        or by setting the values manually.
-
-    Colours are stored in the ASTRAL_CON_COLOUR structure.
-
-    Use the RGBA macro to create a colour, use it with ASTRAL_CON_SET_COLOUR_F_M and ASTRAL_CON_SET_COLOUR_B_M functions.
-
+    Colours are defined below
 
 ---*/
 
-// 4 bytes for the colour
-#define RGBA(r, g, b, a) ((AS_U32)(((AS_U8)(r)|((AS_U16)((AS_U8)(g))<<8))|(((AS_U32)(AS_U8)(b))<<16)|(((AS_U32)(AS_U8)(a))<<24)))
+#define ASTRAL_CON_FOREGROUND_WHITE     0x00000001 // White foreground
+#define ASTRAL_CON_FOREGROUND_BLACK     0x00000002 // Black foreground
 
-/// @brief Converts an ASTRAL_CON_COLOUR structure to an AS_U32 RGBA value
-#define ACCF_TO_U32(ACC) ((AS_U32)(ACC.R_F | (ACC.G_F << 8) | (ACC.B_F << 16) | (ACC.A_F << 24)))
+#define ASTRAL_CON_BACKGROUND_WHITE     0x00000001 // White background
+#define ASTRAL_CON_BACKGROUND_BLACK     0x00000002 // Black background
 
-/// @brief Converts an ASTRAL_CON_COLOUR structure to an AS_U32 RGBA value
-#define ACCB_TO_U32(ACC) ((AS_U32)(ACC.R_B | (ACC.G_B << 8) | (ACC.B_B << 16) | (ACC.A_B << 24)))
+#define ASTRAL_CON_FOREGROUND_DEFAULT    ASTRAL_CON_FOREGROUND_WHITE
+#define ASTRAL_CON_BACKGROUND_DEFAULT    ASTRAL_CON_BACKGROUND_BLACK
 
 /// @brief Console colour structure. Contains foreground and background colours
 typedef struct _ASTRAL_CON_COLOUR {
-    AS_U8 R_F;                  // Red foreground
-    AS_U8 G_F;                  // Green foreground
-    AS_U8 B_F;                  // Blue foreground
-    AS_U8 A_F;                  // Foreground alpha
-
-    AS_U8 R_B;                  // Red background
-    AS_U8 G_B;                  // Green background
-    AS_U8 B_B;                  // Blue background
-    AS_U8 A_B;                  // Background alpha
+    AS_U32 FOREGROUND;          // Foreground colour. Use DEFINES above
+    AS_U32 BACKGROUND;          // Background colour. Use DEFINES above
 } ASTRAL_CON_COLOUR, *PASTRAL_CON_COLOUR;
 
-/// @brief Sets the console colour structure with the given RGB values for the foreground
+/// @brief Sets foreground colour
 /// @param COLOUR Pointer to the colour structure
-/// @param R Red value
-/// @param G Green value
-/// @param B Blue value
-/// @param A Alpha value
+/// @param FOREGROUND Foreground colour. Use DEFINES
 /// @return U0
-ASTRAL_EXPORT AS_U0 ASTRAL_CON_SET_COLOUR_F(ASTRAL_CON_COLOUR* COLOUR, AS_U8 R, AS_U8 G, AS_U8 B, AS_U8 A);
+ASTRAL_EXPORT AS_U0 ASTRAL_CON_SET_COLOUR_F(ASTRAL_CON_COLOUR* COLOUR, AS_U32 FOREGROUND);
 
-/// @brief Sets the console colour structure with the given RGBA value for the foreground
+/// @brief Sets background colour
 /// @param COLOUR Pointer to the colour structure
-/// @param RGBA RGBA value, use the RGBA macro to create a colour
+/// @param BACKGROUND Background colour. Use DEFINES
 /// @return U0
-ASTRAL_EXPORT AS_U0 ASTRAL_CON_SET_COLOUR_F_M(ASTRAL_CON_COLOUR* COLOUR, AS_U32 RGBA);
+ASTRAL_EXPORT AS_U0 ASTRAL_CON_SET_COLOUR_B(ASTRAL_CON_COLOUR* COLOUR, AS_U32 BACKGROUND);
 
-/// @brief Sets the console colour structure with the given RGB values for the background
-/// @param COLOUR Pointer to the colour structure
-/// @param R Red value
-/// @param G Green value
-/// @param B Blue value
-/// @param A Alpha value
-/// @return U0
-ASTRAL_EXPORT AS_U0 ASTRAL_CON_SET_COLOUR_B(ASTRAL_CON_COLOUR* COLOUR, AS_U8 R, AS_U8 G, AS_U8 B, AS_U8 A);
 
-/// @brief Sets the console colour structure with the given RGBA value for the background
-/// @param COLOUR Pointer to the colour structure
-/// @param RGBA RGBA value, use the RGBA macro to create a colour
-/// @return U0
-ASTRAL_EXPORT AS_U0 ASTRAL_CON_SET_COLOUR_B_M(ASTRAL_CON_COLOUR* COLOUR, AS_U32 RGBA);
-
-/// @brief Creates COLOUR structure with the given RGBA values for the foreground and background
-/// @param RGBA_F RGBA value for the foreground
-/// @param RGBA_B RGBA value for the background
+/// @brief Creates a colour structure with the given foreground and background colours
+/// @param FOREGROUND Foreground colour. Use DEFINES
 /// @return ASTRAL_CON_COLOUR, colour structure
-ASTRAL_EXPORT ASTRAL_CON_COLOUR ASTRAL_CON_CREATE_COLOUR_F_B_M(AS_U32 RGBA_F, AS_U32 RGBA_B);
+ASTRAL_EXPORT ASTRAL_CON_COLOUR ASTRAL_CON_CREATE_COLOUR_F_B(AS_U32 FOREGROUND, AS_U32 BACKGROUND);
 
 
 /*+++
@@ -348,10 +315,20 @@ typedef struct _ASTRAL_CON_STYLING {
     ASTRAL_CON_SIZE     SIZE;           // Size
 } ASTRAL_CON_STYLING, *PASTRAL_CON_STYLING;
 
-#define ASTRAL_CON_NULL_COLOUR     ASTRAL_CON_CREATE_COLOUR_F_B_M(RGBA(0,0,0,0), RGBA(0,0,0,0))
+#define ASTRAL_CON_NULL_COLOUR     ASTRAL_CON_CREATE_COLOUR_F_B(ASTRAL_CON_FOREGROUND_DEFAULT, ASTRAL_CON_BACKGROUND_DEFAULT)
 #define ASTRAL_CON_NULL_MARGIN     ASTRAL_CON_CREATE_MARGIN(0,0,0,0)
 #define ASTRAL_CON_NULL_PADDING    ASTRAL_CON_CREATE_PADDING(0,0,0,0)
 
+/// @brief Creates new ASTRAL_CON_STYLING object
+/// @param COLOUR Colours. Create new ASTRAL_CON_COLOUR object with ASTRAL_CON_CREATE_COLOUR_F_B
+/// @param MARGIN Margin. Create with ASTRAL_CON_CREATE_MARGIN
+/// @param PADDING Padding. Create with ASTRAL_CON_CREATE_PADDING
+/// @param BORDER_RADIUS Border radius
+/// @param BORDER_WIDTH Border width
+/// @param BORDER_COLOUR Border colour. Create new ASTRAL_CON_COLOUR object with ASTRAL_CON_CREATE_COLOUR_F_B
+/// @param BORDER_STYLE Border style. USE DEFINES
+/// @param SIZE Size of the object
+/// @return New ASTRAL_CON_STYLING object 
 ASTRAL_EXPORT ASTRAL_CON_STYLING ASTRAL_CON_CREATE_STYLING (
     ASTRAL_CON_COLOUR COLOUR,
     ASTRAL_CON_MARGIN MARGIN,
@@ -362,6 +339,49 @@ ASTRAL_EXPORT ASTRAL_CON_STYLING ASTRAL_CON_CREATE_STYLING (
     AS_U64 BORDER_STYLE,
     ASTRAL_CON_SIZE SIZE
 );
+
+#define AS_CON_TYPE_COMBO(TYPE, SUB_TYPE) ((AS_U32)TYPE << 16 | SUB_TYPE)
+/// @brief Creates new ASTRAL_CON_STYLING object with default values 
+/// @param TYPE_COMBO Use AS_CON_TYPE_COMBO macro defined aboce
+/// @param CATEGORY Category of the styling. See comment box below
+/// @return New ASTRAL_CON_STYLING object with default the default 
+ASTRAL_EXPORT ASTRAL_CON_STYLING ASTRAL_CON_CREATE_STYLING_WITH_PREDEF_STYLING(AS_U32 TYPE_COMBO, AS_U32 CATEGORY);
+
+/*+++
+Default styling for UI elements
+
+Each element type has its own default styling.
+
+Categories:
+    Colour
+    Margin
+    Padding
+    Border radius
+    Border width
+    Border colour
+    Border style
+    Size
+
+Different categories can be combined using bitwise OR ('|').
+---*/
+
+#define ASTRAL_CON_STYLING_CATEGORY_COLOUR          0x00000001
+#define ASTRAL_CON_STYLING_CATEGORY_MARGIN          0x00000002
+#define ASTRAL_CON_STYLING_CATEGORY_PADDING         0x00000004
+#define ASTRAL_CON_STYLING_CATEGORY_BORDER_RADIUS   0x00000008
+#define ASTRAL_CON_STYLING_CATEGORY_BORDER_WIDTH    0x00000010
+#define ASTRAL_CON_STYLING_CATEGORY_BORDER_COLOUR   0x00000020
+#define ASTRAL_CON_STYLING_CATEGORY_BORDER_STYLE    0x00000040
+#define ASTRAL_CON_STYLING_CATEGORY_SIZE            0x00000080
+
+
+#define 
+/// @brief Sets the predefined styling for a UI element
+/// @param ELEMENTUse AS_CON_TYPE_COMBO macro defined aboce for
+/// @param CATEGORY Category of the styling
+/// @return U0
+ASTRAL_EXPORT AS_U0 ASTRAL_CON_SET_PREDEF_STYLING(ASTRAL_CON_UI_ELEM* ELEMENT, AS_U32 CATEGORY);
+
 
 #define ASTRAL_CON_STR_POS_CENTER   0x0001
 #define ASTRAL_CON_STR_POS_LEFT     0x0002
@@ -542,7 +562,7 @@ ASTRAL_EXPORT_INTERNAL AS_U0 ASTRAL_CON_UI_ELEM_FREE(ASTRAL_CON_UI_ELEM* ELEMENT
 /// @param ELEMENT Element to set the text for
 /// @param TEXT Text to set
 /// @return U0
-ASTRAL_EXPORT AS_U0 ASTRAL_CON_UI_ELEM_SET_TEXT(ASTRAL_CON_UI_ELEM* ELEMENT, AS_STRING *TEXT);
+ASTRAL_EXPORT_INTERNAL AS_U0 ASTRAL_CON_UI_ELEM_SET_TEXT(ASTRAL_CON_UI_ELEM* ELEMENT, AS_STRING *TEXT);
 
 /*+++
     
@@ -600,38 +620,6 @@ ASTRAL_EXPORT_INTERNAL AS_U64 ASTRAL_CON_UI_GET_CHILD_OF_ID(ASTRAL_CON_UI_ELEM* 
 ASTRAL_EXPORT_INTERNAL ASTRAL_CON_UI_ELEM* ASTRAL_CON_UI_RECUR_SEARCH_ID(ASTRAL_CON_UI_ELEM* ELEMENT, AS_U64 ID, AS_U32 MAX_DEPTH);
 
 
-/*+++
-Default styling for UI elements
-
-Each element type has its own default styling.
-
-Categories:
-    Colour
-    Margin
-    Padding
-    Border radius
-    Border width
-    Border colour
-    Border style
-    Size
-
-Different categories can be combined using bitwise OR ('|').
----*/
-
-#define ASTRAL_CON_STYLING_CATEGORY_COLOUR          0x00000001
-#define ASTRAL_CON_STYLING_CATEGORY_MARGIN          0x00000002
-#define ASTRAL_CON_STYLING_CATEGORY_PADDING         0x00000004
-#define ASTRAL_CON_STYLING_CATEGORY_BORDER_RADIUS   0x00000008
-#define ASTRAL_CON_STYLING_CATEGORY_BORDER_WIDTH    0x00000010
-#define ASTRAL_CON_STYLING_CATEGORY_BORDER_COLOUR   0x00000020
-#define ASTRAL_CON_STYLING_CATEGORY_BORDER_STYLE    0x00000040
-#define ASTRAL_CON_STYLING_CATEGORY_SIZE            0x00000080
-
-/// @brief Sets the predefined styling for a UI element
-/// @param ELEMENT Element to set the styling for
-/// @param CATEGORY Category of the styling
-/// @return U0
-ASTRAL_EXPORT AS_U0 ASTRAL_CON_SET_PREDEF_STYLING(ASTRAL_CON_UI_ELEM* ELEMENT, AS_U32 CATEGORY);
 
 /// @brief Console buffer
 typedef struct _ASTRAL_CON_BUFFER {
@@ -672,6 +660,15 @@ ASTRAL_EXPORT_INTERNAL AS_U0 ASTRAL_CON_BUFFER_COPY(ASTRAL_CON_BUFFER* DST, ASTR
 /// @return ASTRAL_CON_BUFFER*, pointer to the new buffer
 ASTRAL_EXPORT_INTERNAL ASTRAL_CON_BUFFER *ASTRAL_CON_BUFFER_COPY2(ASTRAL_CON_BUFFER* SRC);
 
+#pragma ONLY_ON_WINDOWS_REMINDER("ASTRAL_CON_RUN_INFO")
+/// @brief Process info for new console
+typedef struct _ASTRAL_CON_RUN_INFO {
+    HANDLE PROCESS_HANDLE;
+    HANDLE THREAD_HANDLE;
+    AS_U32 PROCESS_ID;
+    AS_U32 THREAD_ID;
+} ASTRAL_CON_RUN_INFO, *PASTRAL_CON_RUN_INFO;
+
 /// @brief Console structure
 typedef struct _ASTRAL_CONSOLE {
     ASTRAL_CON_SIZE SIZE;       // Console size
@@ -690,7 +687,15 @@ typedef struct _ASTRAL_CONSOLE {
     AS_U32 OGCHCP;              // Original console code page
 
     ASTRAL_CON_UI_ELEM* ROOT;    // Root element
+    
+    ASTRAL_CON_RUN_INFO RUN_INFO; // Console run info
 } ASTRAL_CONSOLE, *PASTRAL_CONSOLE;
+
+
+
+
+
+
 
 /// @brief Mouse event structure
 typedef struct _ASTRAL_CON_MOUSE_EVENT {

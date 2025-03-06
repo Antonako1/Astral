@@ -1,3 +1,4 @@
+#define ASTRAL_DEBUG_ACTIVE 1 // Allow use of internal functions
 #include "../../INCLUDE/ASTRAL.H"
 #include <stdio.h>
 #include <stdlib.h>
@@ -25,10 +26,10 @@ int main(void) {
             AS_MAIN_BOX_ID,
             ASTRAL_CON_CREATE_COORD(0,0),
             ASTRAL_CON_CREATE_STYLING(
-                ASTRAL_CON_CREATE_COLOUR_F_B_M(RGBA(0,0,0,0),RGBA(0,0,0,0)),
+                ASTRAL_CON_CREATE_COLOUR_F_B(ASTRAL_CON_FOREGROUND_DEFAULT, ASTRAL_CON_BACKGROUND_DEFAULT),
                 ASTRAL_CON_CREATE_MARGIN(0,0,0,0),
                 ASTRAL_CON_CREATE_PADDING(0,0,0,0),
-                0, 0, ASTRAL_CON_CREATE_COLOUR_F_B_M(RGBA(0,0,0,0),RGBA(0,0,0,0)), BORDER_STYLE_DEFAULT,
+                0, 0, ASTRAL_CON_CREATE_COLOUR_F_B(ASTRAL_CON_FOREGROUND_DEFAULT, ASTRAL_CON_BACKGROUND_DEFAULT), BORDER_STYLE_DEFAULT,
                 ASTRAL_CON_CREATE_SIZE(10, 10)
             ),
             NULLPTR,
